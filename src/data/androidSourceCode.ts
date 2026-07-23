@@ -555,5 +555,93 @@ CREATE TABLE IF NOT EXISTS mood_logs (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );`
+  },
+  {
+    path: 'Procfile',
+    language: 'plaintext',
+    category: 'Flask Backend',
+    description: 'Render WSGI production web start command',
+    content: `web: gunicorn app:app`
+  },
+  {
+    path: 'requirements.txt',
+    language: 'plaintext',
+    category: 'Flask Backend',
+    description: 'Python packages required for Render production deployment',
+    content: `Flask==3.0.3
+Flask-CORS==4.0.1
+Flask-JWT-Extended==4.6.0
+Flask-SQLAlchemy==3.1.1
+google-genai==0.1.1
+gunicorn==22.0.0
+python-dotenv==1.0.1
+Werkzeug==3.0.3`
+  },
+  {
+    path: 'render.yaml',
+    language: 'yaml',
+    category: 'Flask Backend',
+    description: 'Render Infrastructure-as-Code service specification',
+    content: `services:
+  - type: web
+    name: healthguardian-ai-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: FLASK_ENV
+        value: production
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        value: sqlite:///healthguardian.db`
+  },
+  {
+    path: 'runtime.txt',
+    language: 'plaintext',
+    category: 'Flask Backend',
+    description: 'Python runtime version for Render deployment',
+    content: `python-3.11.9`
+  },
+  {
+    path: '.env.example',
+    language: 'plaintext',
+    category: 'Flask Backend',
+    description: 'Sample environment configuration file for local & production secrets',
+    content: `# HealthGuardian AI / HealthMate Flask Backend Environment Variables
+FLASK_ENV=production
+PORT=5000
+JWT_SECRET_KEY=your_super_secret_jwt_key_here
+GEMINI_API_KEY=your_google_gemini_api_key_here
+DATABASE_URL=sqlite:///healthguardian.db
+APP_URL=https://your-frontend-domain.onrender.com`
+  },
+  {
+    path: '.gitignore',
+    language: 'plaintext',
+    category: 'Flask Backend',
+    description: 'Git ignore rules for Python, Flask, OS, and build artifacts',
+    content: `__pycache__/
+*.pyc
+.env
+venv/
+env/
+instance/
+*.db
+*.sqlite3
+.DS_Store
+.idea/
+.vscode/
+node_modules/
+build/
+dist/
+coverage/
+*.log
+!.env.example`
   }
 ];

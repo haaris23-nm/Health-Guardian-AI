@@ -131,7 +131,7 @@ export interface ChatMessage {
 
 export interface CodeFile {
   path: string;
-  language: 'java' | 'python' | 'xml' | 'sql' | 'json' | 'markdown';
+  language: 'java' | 'python' | 'xml' | 'sql' | 'json' | 'markdown' | 'yaml' | 'plaintext';
   content: string;
   category: 'Android App' | 'Flask Backend' | 'Database Schema' | 'API Docs' | 'README';
   description: string;
