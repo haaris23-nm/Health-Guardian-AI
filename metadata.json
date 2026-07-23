@@ -1,0 +1,6 @@
+{
+  "name": "HealthMate AI",
+  "description": "A comprehensive Android Material Design 3 health tracking and AI wellness app with Python Flask REST backend and Android Java source code export.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
