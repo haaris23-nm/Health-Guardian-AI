@@ -2,20 +2,23 @@
 
 @layer base {
   :root {
-    --bg-canvas: #F3F4F9;
+    --bg-canvas: #F8FAFC;
     --bg-card: #FFFFFF;
     --border-card: #E2E8F0;
+    --primary-blue: #1D4ED8;
   }
   
   .dark {
-    --bg-canvas: #0B0F19;
-    --bg-card: #151C2C;
-    --border-card: #1E293B;
+    --bg-canvas: #0F172A;
+    --bg-card: #1E293B;
+    --border-card: #334155;
+    --primary-blue: #3B82F6;
   }
 
   body {
     background-color: var(--bg-canvas);
     color: #0F172A;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   }
 
   .dark body {
@@ -24,10 +27,13 @@
 }
 
 @theme {
-  --color-canvas-light: #F3F4F9;
-  --color-canvas-dark: #0B0F19;
+  --color-canvas-light: #F8FAFC;
+  --color-canvas-dark: #0F172A;
   --color-card-light: #FFFFFF;
-  --color-card-dark: #151C2C;
-  --color-indigo-600: #4F46E5;
-  --color-indigo-900: #312E81;
+  --color-card-dark: #1E293B;
+  --color-blue-600: #2563EB;
+  --color-blue-700: #1D4ED8;
+  --color-blue-800: #1E40AF;
+  --color-blue-900: #1E3A8A;
 }
+

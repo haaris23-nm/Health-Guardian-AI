@@ -94,35 +94,35 @@ export const PrescriptionView: React.FC<PrescriptionViewProps> = ({
     <div className="space-y-6 pb-24 font-sans max-w-7xl mx-auto px-1 sm:px-4">
       
       {/* Header Banner */}
-      <div className="bg-indigo-900 text-white rounded-[2.5rem] p-6 sm:p-8 relative overflow-hidden shadow-lg">
+      <div className="bg-blue-900 text-white rounded-[2.5rem] p-6 sm:p-8 relative overflow-hidden shadow-md border border-blue-800">
         <div className="relative z-10 max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-800/80 border border-indigo-700/50 text-indigo-200 text-xs font-semibold">
-            <Sparkles className="w-4 h-4 text-amber-300" />
-            AI Prescription Scanner & Guide
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-800/80 border border-blue-700/50 text-blue-200 text-xs font-bold">
+            <Sparkles className="w-4 h-4 text-blue-300" />
+            AI Prescription Reader & Guide
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
             Prescription Reader & Action Plan
           </h1>
-          <p className="text-indigo-200 text-xs sm:text-sm leading-relaxed">
+          <p className="text-blue-100 text-xs sm:text-sm leading-relaxed font-medium">
             Upload or snap a photo of your doctor's prescription note or paste handwritten medicine names. Our Gemini AI will translate medical jargon into a clear step-by-step action plan, dosage timings, food precautions, and alert flags.
           </p>
         </div>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500 rounded-full mix-blend-screen filter blur-3xl opacity-20 -mr-20 -mt-20 pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600 rounded-full mix-blend-screen filter blur-3xl opacity-20 -mr-20 -mt-20 pointer-events-none"></div>
       </div>
 
       {/* Input Section: Upload Image, Paste Text, or Select Presets */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Input Panel */}
-        <div className="lg:col-span-7 bg-white dark:bg-[#151C2C] rounded-[2rem] p-6 shadow-sm border border-slate-100 dark:border-slate-800 space-y-5">
-          <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-indigo-600" />
+        <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-xs border border-blue-100 dark:border-slate-800 space-y-5">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <FileText className="w-5 h-5 text-blue-600" />
             1. Provide Your Prescription
           </h2>
 
           {/* Quick Presets for Instant Demo */}
           <div>
-            <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">
+            <label className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider block mb-2">
               Try Preset Doctor Prescriptions (1-Click AI Demo)
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -132,14 +132,14 @@ export const PrescriptionView: React.FC<PrescriptionViewProps> = ({
                   setPrescriptionText('Rx: Amoxicillin 625mg twice daily after food x 7 days. Paracetamol 650mg 3x daily as needed for fever. Omeprazole 20mg once before breakfast.');
                   handleAnalyze('infection');
                 }}
-                className="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 border border-indigo-100 dark:border-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-left text-xs font-semibold transition-all flex items-center gap-2"
+                className="p-3 rounded-2xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 border border-blue-100 dark:border-slate-700 text-blue-800 dark:text-blue-300 text-left text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 font-bold">
+                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 font-bold">
                   Rx1
                 </div>
                 <div>
                   <span className="block font-bold">Respiratory & Infection</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400">Antibiotic + Fever Care</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">Antibiotic Care</span>
                 </div>
               </button>
 
@@ -149,14 +149,14 @@ export const PrescriptionView: React.FC<PrescriptionViewProps> = ({
                   setPrescriptionText('Rx: Amlodipine 5mg once daily morning. Atorvastatin 10mg once daily night. Omeprazole 20mg before food.');
                   handleAnalyze('cardio');
                 }}
-                className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 border border-rose-100 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 text-left text-xs font-semibold transition-all flex items-center gap-2"
+                className="p-3 rounded-2xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 border border-blue-100 dark:border-slate-700 text-blue-800 dark:text-blue-300 text-left text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 font-bold">
+                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 font-bold">
                   Rx2
                 </div>
                 <div>
                   <span className="block font-bold">Hypertension & Heart</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400">BP + Cholesterol Maintenance</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">BP Maintenance</span>
                 </div>
               </button>
 
@@ -166,14 +166,14 @@ export const PrescriptionView: React.FC<PrescriptionViewProps> = ({
                   setPrescriptionText('Rx: Metformin 500mg twice daily with meals. Glimepiride 1mg before breakfast. Multivitamin 1 tab daily.');
                   handleAnalyze('diabetes');
                 }}
-                className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 border border-emerald-100 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-left text-xs font-semibold transition-all flex items-center gap-2"
+                className="p-3 rounded-2xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 border border-blue-100 dark:border-slate-700 text-blue-800 dark:text-blue-300 text-left text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 font-bold">
+                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 font-bold">
                   Rx3
                 </div>
                 <div>
                   <span className="block font-bold">Diabetes & Glycemic</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400">Blood Sugar Regimen</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">Sugar Regimen</span>
                 </div>
               </button>
             </div>
@@ -184,7 +184,7 @@ export const PrescriptionView: React.FC<PrescriptionViewProps> = ({
             <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">
               Upload Prescription Image or Photo
             </label>
-            <div className="relative border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-indigo-500 rounded-2xl p-4 text-center bg-slate-50 dark:bg-slate-900/30 transition-colors">
+            <div className="relative border-2 border-dashed border-blue-200 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-4 text-center bg-blue-50/30 dark:bg-slate-800/40 transition-colors">
               <input
                 type="file"
                 accept="image/*"
@@ -194,15 +194,15 @@ export const PrescriptionView: React.FC<PrescriptionViewProps> = ({
               {imagePreview ? (
                 <div className="space-y-2">
                   <img src={imagePreview} alt="Prescription preview" className="max-h-48 mx-auto rounded-xl shadow-md object-contain" />
-                  <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">Image uploaded cleanly. Click "Analyze with AI" below.</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400 font-bold">Image uploaded cleanly. Click "Analyze with AI" below.</p>
                 </div>
               ) : (
                 <div className="space-y-2 py-4">
-                  <Upload className="w-8 h-8 mx-auto text-indigo-600 dark:text-indigo-400" />
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  <Upload className="w-8 h-8 mx-auto text-blue-600 dark:text-blue-400" />
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
                     Click or drag & drop prescription image here
                   </p>
-                  <p className="text-[11px] text-slate-400">Supports JPG, PNG, WEBP (Handwritten or Printed Doctor Notes)</p>
+                  <p className="text-[11px] text-slate-500 font-medium">Supports JPG, PNG, WEBP (Handwritten or Printed Doctor Notes)</p>
                 </div>
               )}
             </div>
@@ -218,7 +218,7 @@ export const PrescriptionView: React.FC<PrescriptionViewProps> = ({
               value={prescriptionText}
               onChange={(e) => setPrescriptionText(e.target.value)}
               placeholder="e.g. Amoxicillin 500mg 3x daily for 7 days, Paracetamol 650mg as needed for fever..."
-              className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#151C2C] p-3 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+              className="w-full rounded-2xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
             />
           </div>
 
@@ -226,7 +226,7 @@ export const PrescriptionView: React.FC<PrescriptionViewProps> = ({
           <button
             onClick={() => handleAnalyze()}
             disabled={loading || (!prescriptionText && !imagePreview)}
-            className="w-full py-3.5 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3.5 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             {loading ? (
               <>
@@ -235,7 +235,7 @@ export const PrescriptionView: React.FC<PrescriptionViewProps> = ({
               </>
             ) : (
               <>
-                <Sparkles className="w-5 h-5 text-amber-300" />
+                <Sparkles className="w-5 h-5 text-blue-200" />
                 <span>Analyze Prescription & Generate Action Guide</span>
               </>
             )}

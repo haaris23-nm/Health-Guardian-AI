@@ -28,7 +28,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 h-20 bg-white dark:bg-[#151C2C] border-t border-slate-200 dark:border-slate-800 px-4 flex justify-between items-center shadow-lg">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 h-20 bg-white dark:bg-slate-900 border-t border-blue-100 dark:border-slate-800 px-4 flex justify-between items-center shadow-lg">
       <div className="flex justify-around items-center w-full">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -40,7 +40,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               <button
                 key={item.id}
                 onClick={onOpenFAB || (() => navigateHandler('dashboard'))}
-                className="w-14 h-14 bg-indigo-600 rounded-full shadow-lg shadow-indigo-200 dark:shadow-none flex items-center justify-center text-white -mt-10 border-4 border-white dark:border-[#0B0F19] hover:scale-105 transition-transform"
+                className="w-14 h-14 bg-blue-600 rounded-full shadow-lg shadow-blue-200 dark:shadow-none flex items-center justify-center text-white -mt-10 border-4 border-white dark:border-slate-900 hover:scale-105 transition-transform"
                 title="Quick Log"
               >
                 <Plus className="w-7 h-7" />
@@ -57,15 +57,15 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               <div
                 className={`p-1.5 rounded-xl transition-all duration-200 flex items-center justify-center ${
                   isActive
-                    ? 'text-indigo-600 dark:text-indigo-400 scale-110'
-                    : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'
+                    ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-slate-800 scale-105'
+                    : 'text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-slate-300'
                 }`}
               >
                 <Icon className="w-5 h-5" />
               </div>
               <span
-                className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${
-                  isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'
+                className={`text-[10px] font-bold tracking-tight transition-colors ${
+                  isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'
                 }`}
               >
                 {item.label}

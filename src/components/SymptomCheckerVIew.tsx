@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stethoscope, Sparkles, AlertTriangle, CheckCircle2, ShieldAlert, Loader2, Info } from 'lucide-react';
+import { Stethoscope, Sparkles, AlertTriangle, ShieldAlert, Loader2, Info } from 'lucide-react';
 import { SymptomCheckResult } from '../types';
 
 export const SymptomCheckerVIew: React.FC = () => {
@@ -45,35 +45,35 @@ export const SymptomCheckerVIew: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-20">
+    <div className="max-w-4xl mx-auto space-y-6 pb-20 font-sans">
       
       {/* Title Header */}
-      <div className="flex items-center gap-3 border-b border-outline-light dark:border-outline-dark pb-4">
-        <div className="p-3 rounded-2xl bg-rose-500 text-white shadow-sm">
+      <div className="flex items-center gap-3 border-b border-blue-100 dark:border-slate-800 pb-4">
+        <div className="p-3 rounded-2xl bg-blue-600 text-white shadow-xs">
           <Stethoscope className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-black text-on-surface-light dark:text-on-surface-dark">
-            AI Symptom Checker & Triage
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white">
+            AI Symptom Checker & Medical Triage
           </h1>
-          <p className="text-xs text-on-surface-variant-light dark:text-on-surface-variant-dark">
-            Describe symptoms to receive AI-powered potential causes & medical urgency indicators.
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            Describe symptoms clearly to receive AI-powered potential causes & medical urgency guidance.
           </p>
         </div>
       </div>
 
       {/* Mandatory Disclaimer Banner */}
-      <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 flex items-start gap-3 text-xs leading-relaxed">
-        <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+      <div className="p-4 rounded-2xl bg-blue-50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-blue-900 dark:text-blue-200 flex items-start gap-3 text-xs leading-relaxed">
+        <ShieldAlert className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
         <div>
-          <span className="font-extrabold uppercase tracking-wide block mb-0.5">Medical Disclaimer</span>
-          This tool provides AI-generated informational insights powered by Google Gemini. It is <strong>NOT a medical diagnosis</strong>, treatment plan, or professional medical advice. If you are experiencing severe symptoms, chest pain, difficulty breathing, or a medical emergency, call emergency medical services immediately.
+          <span className="font-extrabold uppercase tracking-wide block mb-0.5 text-blue-700 dark:text-blue-300">Medical Advisory</span>
+          This tool provides AI-generated informational insights powered by Google Gemini. It is <strong>NOT a medical diagnosis</strong>, treatment plan, or doctor prescription. If you are experiencing severe symptoms, chest pain, or a medical emergency, call emergency medical services immediately.
         </div>
       </div>
 
       {/* Input Section */}
-      <div className="rounded-3xl p-6 bg-surface-light dark:bg-surface-dark border border-outline-light dark:border-outline-dark shadow-sm space-y-4">
-        <label className="block text-xs font-bold uppercase text-on-surface-variant-light dark:text-on-surface-variant-dark">
+      <div className="rounded-3xl p-6 bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-xs space-y-4">
+        <label className="block text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
           Describe Your Symptoms
         </label>
 
@@ -82,12 +82,12 @@ export const SymptomCheckerVIew: React.FC = () => {
           value={symptomsInput}
           onChange={(e) => setSymptomsInput(e.target.value)}
           placeholder="e.g. I have had a dull headache for 2 days, mild nasal congestion, and felt fatigued since yesterday morning..."
-          className="w-full p-4 rounded-2xl border border-outline-light dark:border-outline-dark bg-background-light dark:bg-background-dark text-sm font-medium text-on-surface-light dark:text-on-surface-dark focus:ring-2 ring-primary focus:outline-hidden"
+          className="w-full p-4 rounded-2xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
         />
 
         {/* Quick Suggestion Chips */}
         <div>
-          <span className="text-[11px] font-bold text-on-surface-variant-light dark:text-on-surface-variant-dark uppercase block mb-2">
+          <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block mb-2">
             Common Quick Symptoms:
           </span>
           <div className="flex flex-wrap gap-2">
@@ -95,7 +95,7 @@ export const SymptomCheckerVIew: React.FC = () => {
               <button
                 key={idx}
                 onClick={() => setSymptomsInput(chip)}
-                className="px-3 py-1.5 rounded-full bg-surface-variant-light dark:bg-surface-variant-dark hover:bg-primary/10 hover:text-primary text-xs font-semibold text-on-surface-light dark:text-on-surface-dark transition-all"
+                className="px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold transition-all border border-blue-100 dark:border-slate-700 cursor-pointer"
               >
                 + {chip}
               </button>
@@ -106,16 +106,16 @@ export const SymptomCheckerVIew: React.FC = () => {
         <button
           onClick={() => handleAnalyze()}
           disabled={loading || !symptomsInput.trim()}
-          className="w-full py-3.5 rounded-full bg-primary text-on-primary font-bold text-sm shadow-md hover:bg-primary-dark transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-3.5 rounded-full bg-blue-600 text-white font-bold text-sm shadow-xs hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
         >
           {loading ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
-              <span>Analyzing with Gemini AI...</span>
+              <span>Analyzing Symptoms with Gemini AI...</span>
             </>
           ) : (
             <>
-              <Sparkles className="w-5 h-5 text-amber-300" />
+              <Sparkles className="w-5 h-5 text-blue-200" />
               <span>Analyze Symptoms with Gemini</span>
             </>
           )}
@@ -123,41 +123,35 @@ export const SymptomCheckerVIew: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-600 text-xs font-bold">
+        <div className="p-4 rounded-2xl bg-blue-50 dark:bg-slate-800 border border-blue-200 text-blue-800 dark:text-blue-200 text-xs font-bold">
           {error}
         </div>
       )}
 
       {/* Analysis Results Card */}
       {result && (
-        <div className="rounded-3xl p-6 bg-surface-light dark:bg-surface-dark border border-outline-light dark:border-outline-dark shadow-md space-y-6 animate-fade-in">
+        <div className="rounded-3xl p-6 bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-xs space-y-6">
           
           {/* Header with Urgency Badge */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-light dark:border-outline-dark pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-blue-100 dark:border-slate-800 pb-4">
             <div>
-              <span className="text-xs font-extrabold uppercase text-primary tracking-wider">
+              <span className="text-xs font-extrabold uppercase text-blue-600 tracking-wider">
                 Analysis Report
               </span>
-              <h2 className="text-xl font-black text-on-surface-light dark:text-on-surface-dark">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white">
                 Reported Symptoms: "{result.symptoms.join(', ')}"
               </h2>
             </div>
 
-            <div className={`px-4 py-2 rounded-full font-black text-xs border uppercase tracking-wider flex items-center gap-1.5 w-fit ${
-              result.urgency === 'Urgent Medical Attention Required'
-                ? 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-950 dark:text-rose-200'
-                : result.urgency === 'Non-urgent'
-                ? 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-200'
-                : 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-200'
-            }`}>
-              <AlertTriangle className="w-4 h-4" />
+            <div className="px-4 py-2 rounded-full font-black text-xs border uppercase tracking-wider flex items-center gap-1.5 w-fit bg-blue-50 text-blue-800 border-blue-200 dark:bg-slate-800 dark:text-blue-300">
+              <AlertTriangle className="w-4 h-4 text-blue-600" />
               <span>Urgency: {result.urgency}</span>
             </div>
           </div>
 
           {/* Probable Causes List */}
           <div className="space-y-3">
-            <h3 className="font-extrabold text-sm text-on-surface-light dark:text-on-surface-dark uppercase tracking-wider">
+            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white uppercase tracking-wider">
               Potential Medical Causes Identified
             </h3>
 
@@ -165,23 +159,17 @@ export const SymptomCheckerVIew: React.FC = () => {
               {result.probableCauses.map((cause, idx) => (
                 <div
                   key={idx}
-                  className="p-4 rounded-2xl bg-surface-variant-light/40 dark:bg-surface-variant-dark/40 border border-outline-light/40 dark:border-outline-dark/40 space-y-1"
+                  className="p-4 rounded-2xl bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100 dark:border-slate-800 space-y-1"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm text-on-surface-light dark:text-on-surface-dark">
+                    <span className="font-bold text-sm text-slate-900 dark:text-white">
                       {cause.title}
                     </span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
-                      cause.likelihood === 'High'
-                        ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
-                        : cause.likelihood === 'Moderate'
-                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
-                        : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
-                    }`}>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 text-blue-800 dark:bg-slate-700 dark:text-blue-200">
                       {cause.likelihood} Likelihood
                     </span>
                   </div>
-                  <p className="text-xs text-on-surface-variant-light dark:text-on-surface-variant-dark leading-relaxed">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
                     {cause.description}
                   </p>
                 </div>
@@ -190,18 +178,18 @@ export const SymptomCheckerVIew: React.FC = () => {
           </div>
 
           {/* AI Recommendation */}
-          <div className="p-4 rounded-2xl bg-primary-container/20 border border-primary-container text-on-surface-light dark:text-on-surface-dark space-y-1">
-            <h4 className="font-extrabold text-xs uppercase text-primary flex items-center gap-1.5">
+          <div className="p-4 rounded-2xl bg-blue-50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 text-slate-900 dark:text-slate-100 space-y-1">
+            <h4 className="font-extrabold text-xs uppercase text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
               <Info className="w-4 h-4" />
               General Care Advice
             </h4>
-            <p className="text-xs leading-relaxed">
+            <p className="text-xs font-medium leading-relaxed">
               {result.recommendation}
             </p>
           </div>
 
           {/* Bottom Disclaimer */}
-          <p className="text-[11px] text-on-surface-variant-light dark:text-on-surface-variant-dark italic border-t border-outline-light dark:border-outline-dark pt-3">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 italic border-t border-blue-100 dark:border-slate-800 pt-3">
             {result.disclaimer}
           </p>
 
