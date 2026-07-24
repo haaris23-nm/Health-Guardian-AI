@@ -7,12 +7,12 @@ interface AuthViewProps {
   defaultEmail?: string;
 }
 
-export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail = 'alex.johnson@healthmate.ai' }) => {
+export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail = '' }) => {
   const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
   
   // Login form state
   const [loginEmail, setLoginEmail] = useState<string>(defaultEmail);
-  const [loginPassword, setLoginPassword] = useState<string>('password123');
+  const [loginPassword, setLoginPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(true);
 
@@ -30,26 +30,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail
   // Status/Error messages
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-
-  // Quick 1-Click Demo Login
-  const handleQuickDemoLogin = () => {
-    setLoading(true);
-    setTimeout(() => {
-      const demoUser: UserProfile = {
-        id: 'usr_demo_1',
-        name: 'Alex Johnson',
-        email: 'alex.johnson@healthmate.ai',
-        age: 28,
-        gender: 'male',
-        heightCm: 178,
-        weightKg: 74,
-        goal: 'maintain',
-        activityLevel: 'moderate',
-      };
-      onLoginSuccess(demoUser);
-      setLoading(false);
-    }, 400);
-  };
 
   // Handle Login
   const handleLoginSubmit = (e: React.FormEvent) => {
@@ -229,7 +209,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail
                   required
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="alex.johnson@healthmate.ai"
+                  placeholder="name@example.com"
                   className="w-full pl-10 pr-4 py-3 rounded-2xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-hidden transition-all"
                 />
               </div>
@@ -299,26 +279,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail
                 </>
               )}
             </button>
-
-            {/* Divider */}
-            <div className="relative my-4 flex items-center justify-center">
-              <div className="border-t border-blue-100 dark:border-slate-800 w-full"></div>
-              <span className="bg-white dark:bg-slate-900 px-3 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest absolute">
-                OR
-              </span>
-            </div>
-
-            {/* 1-Click Demo Access Button */}
-            <button
-              type="button"
-              onClick={handleQuickDemoLogin}
-              disabled={loading}
-              className="w-full py-3 px-4 rounded-2xl bg-blue-50 hover:bg-blue-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-blue-100 dark:border-slate-700 text-blue-700 dark:text-blue-300 font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              <span>1-Click Instant Demo Login (Alex Johnson)</span>
-            </button>
-
           </form>
         )}
 

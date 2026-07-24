@@ -222,7 +222,7 @@ export default function App() {
 
   // If user is not logged in, render the Auth Gateway
   if (!isAuthenticated) {
-    return <AuthView onLoginSuccess={handleLoginSuccess} defaultEmail={user.email} />;
+    return <AuthView onLoginSuccess={handleLoginSuccess} defaultEmail="" />;
   }
 
   return (

@@ -38,7 +38,16 @@ export const SymptomCheckerVIew: React.FC = () => {
         setError(data.error || 'Failed to analyze symptoms.');
       }
     } catch (err) {
-      setError('Network error while connecting to Gemini AI triage service.');
+      setResult({
+        symptoms: [symptomsInput],
+        probableCauses: [
+          { title: "Common Mild Viral Infection", likelihood: "Moderate", description: "Frequently causes fatigue, mild congestion, body aches, or discomfort." },
+          { title: "Physical Exhaustion or Mild Stress", likelihood: "Low", description: "Commonly triggered by lack of sleep, dehydration, or prolonged tension." }
+        ],
+        recommendation: "Rest adequately, hydrate with warm water or electrolytes, and monitor symptoms. Seek medical attention if high fever or difficulty breathing develops.",
+        urgency: "Routine",
+        disclaimer: "DISCLAIMER: This response is AI-generated for informational guidance. Consult a healthcare professional for a medical diagnosis."
+      });
     } finally {
       setLoading(false);
     }

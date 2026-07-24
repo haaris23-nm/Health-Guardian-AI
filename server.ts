@@ -639,16 +639,74 @@ Extract and organize all details. Return a JSON object with this EXACT schema:
 
 
 // Nearby Hospitals API
-app.get("/api/hospitals", (req, res) => {
-  const { query, open24h } = req.query;
-  let list = HOSPITALS;
-  if (query && typeof query === 'string') {
-    const q = query.toLowerCase();
-    list = list.filter(h => h.name.toLowerCase().includes(q) || h.address.toLowerCase().includes(q));
+app.get("/api/hospitals", async (req, res) => {
+  const { query, open24h, lat, lng } = req.query;
+  let list = [...HOSPITALS];
+
+  // If user lat & lng are provided, calculate real distance using Haversine formula
+  if (lat && lng) {
+    const userLat = Number(lat);
+    const userLng = Number(lng);
+    if (!isNaN(userLat) && !isNaN(userLng)) {
+      list = list.map(h => {
+        const dLat = (h.lat - userLat) * (Math.PI / 180);
+        const dLng = (h.lng - userLng) * (Math.PI / 180);
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(userLat * (Math.PI / 180)) * Math.cos(h.lat * (Math.PI / 180)) *
+                  Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distKm = Number((6371 * c).toFixed(1));
+        return { ...h, distanceKm: distKm > 0 ? distKm : 0.8 };
+      }).sort((a, b) => a.distanceKm - b.distanceKm);
+    }
   }
+
+  if (query && typeof query === 'string' && query.trim().length > 0) {
+    const q = query.toLowerCase().trim();
+    const filtered = list.filter(h => h.name.toLowerCase().includes(q) || h.address.toLowerCase().includes(q));
+
+    // If query doesn't match default mock list and Gemini is available, search real hospitals in that location!
+    if (filtered.length === 0 && ai) {
+      try {
+        const prompt = `Provide a JSON array of 4 real or highly accurate top medical centers/hospitals located in or near "${query}".
+Return JSON array with exact format:
+[
+  {
+    "id": "h_gen_1",
+    "name": "Full Hospital Name",
+    "address": "Full Street Address, City, Country",
+    "distanceKm": 1.5,
+    "rating": 4.7,
+    "phone": "+1 (555) 000-0000",
+    "lat": 37.7749,
+    "lng": -122.4194,
+    "open24h": true,
+    "emergencyServices": true
+  }
+]`;
+        const response = await ai.models.generateContent({
+          model: "gemini-3.6-flash",
+          contents: prompt,
+          config: { responseMimeType: "application/json" }
+        });
+        const aiHospitals = JSON.parse(response.text || "[]");
+        if (Array.isArray(aiHospitals) && aiHospitals.length > 0) {
+          list = aiHospitals;
+        } else {
+          list = filtered;
+        }
+      } catch (err) {
+        list = filtered;
+      }
+    } else {
+      list = filtered;
+    }
+  }
+
   if (open24h === 'true') {
     list = list.filter(h => h.open24h);
   }
+
   res.json(list);
 });
 

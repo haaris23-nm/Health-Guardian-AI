@@ -48,83 +48,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* Main Column */}
         <div className="lg:col-span-8 flex flex-col gap-6">
           
-          {/* Top 3 KPI Cards Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            
-            {/* Steps Card */}
-            <div
-              onClick={() => onNavigate('reports')}
-              className="bg-white dark:bg-slate-900 p-5 rounded-[2rem] shadow-xs border border-blue-100 dark:border-slate-800 flex flex-col justify-between hover:shadow-md transition-all cursor-pointer group"
-            >
-              <div className="flex justify-between items-start">
-                <span className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Steps Today</span>
-                <div className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950 rounded-xl text-blue-700 dark:text-blue-300 font-bold text-xs">
-                  +{stepsPercent}%
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                  {metrics.stepsCount.toLocaleString()}
-                </div>
-                <div className="w-full bg-blue-50 dark:bg-slate-800 h-2 mt-3 rounded-full overflow-hidden">
-                  <div className="bg-blue-600 h-full rounded-full transition-all duration-500" style={{ width: `${stepsPercent}%` }} />
-                </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">Goal: {metrics.stepsGoal.toLocaleString()} steps</p>
-              </div>
-            </div>
-
-            {/* Calories Card */}
-            <div
-              onClick={() => onNavigate('reports')}
-              className="bg-white dark:bg-slate-900 p-5 rounded-[2rem] shadow-xs border border-blue-100 dark:border-slate-800 flex flex-col justify-between hover:shadow-md transition-all cursor-pointer group"
-            >
-              <div className="flex justify-between items-start">
-                <span className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Calories</span>
-                <div className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950 rounded-xl text-blue-700 dark:text-blue-300 font-bold text-xs">
-                  Active
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                  {metrics.caloriesBurned.toLocaleString()} <span className="text-sm font-medium text-slate-400">kcal</span>
-                </div>
-                <div className="w-full bg-blue-50 dark:bg-slate-800 h-2 mt-3 rounded-full overflow-hidden">
-                  <div className="bg-blue-600 h-full rounded-full transition-all duration-500" style={{ width: `${caloriesPercent}%` }} />
-                </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">Daily Burn: {metrics.caloriesGoal} kcal</p>
-              </div>
-            </div>
-
-            {/* Heart Rate Card */}
-            <div
-              onClick={() => onNavigate('reports')}
-              className="bg-white dark:bg-slate-900 p-5 rounded-[2rem] shadow-xs border border-blue-100 dark:border-slate-800 flex flex-col justify-between hover:shadow-md transition-all cursor-pointer group"
-            >
-              <div className="flex justify-between items-start">
-                <span className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Heart Rate</span>
-                <div className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950 rounded-xl text-blue-700 dark:text-blue-300 font-bold text-xs">
-                  Normal
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                  {metrics.heartRateBpm} <span className="text-base font-medium text-slate-400">bpm</span>
-                </div>
-                {/* Equalizer Bar Chart Visual */}
-                <div className="flex gap-1.5 mt-3 items-end h-8">
-                  <div className="w-1.5 h-3 bg-blue-200 dark:bg-blue-900 rounded-full"></div>
-                  <div className="w-1.5 h-5 bg-blue-300 dark:bg-blue-800 rounded-full"></div>
-                  <div className="w-1.5 h-8 bg-blue-600 rounded-full"></div>
-                  <div className="w-1.5 h-6 bg-blue-500 rounded-full"></div>
-                  <div className="w-1.5 h-4 bg-blue-300 dark:bg-blue-800 rounded-full"></div>
-                  <div className="w-1.5 h-7 bg-blue-600 rounded-full"></div>
-                  <div className="w-1.5 h-5 bg-blue-400 rounded-full"></div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
           {/* AI Health Insight Hero Section */}
           <div className="bg-blue-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-md flex-1 min-h-[220px] flex flex-col justify-between border border-blue-800">
             <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
@@ -135,7 +58,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-white">AI Health Insight for {user.name.split(' ')[0]}</h2>
                 <p className="text-blue-100 max-w-xl text-sm sm:text-base leading-relaxed">
-                  Based on your sleep quality ({metrics.sleepHours}h) and steady resting heart rate ({metrics.heartRateBpm} bpm), your physical recovery index is optimal today. Great day for a workout or cardio session!
+                  Based on your sleep quality ({metrics.sleepHours}h) and hydration level, your physical recovery index is optimal today. Great day for a workout or wellness session!
                 </p>
               </div>
 
