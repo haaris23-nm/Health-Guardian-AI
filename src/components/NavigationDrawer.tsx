@@ -18,7 +18,8 @@ import {
   HeartPulse,
   Sparkles,
   ChevronRight,
-  FileText
+  FileText,
+  LogOut
 } from 'lucide-react';
 
 
@@ -31,6 +32,7 @@ interface NavigationDrawerProps {
   onNavigate?: (view: string) => void;
   userName?: string;
   userEmail?: string;
+  onLogout?: () => void;
 }
 
 export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
@@ -42,6 +44,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onNavigate,
   userName = 'Alex Johnson',
   userEmail = 'alex.johnson@healthmate.ai',
+  onLogout,
 }) => {
   if (!isOpen) return null;
 
@@ -176,7 +179,19 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
         </div>
 
         {/* Drawer Footer */}
-        <div className="p-4 border-t border-blue-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50 text-center">
+        <div className="p-4 border-t border-blue-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50 flex flex-col items-center gap-2">
+          {onLogout && (
+            <button
+              onClick={() => {
+                onClose();
+                onLogout();
+              }}
+              className="w-full py-2.5 px-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/60 font-bold text-xs transition-colors flex items-center justify-center gap-2 border border-rose-100 dark:border-rose-900/50 cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out / Log Out</span>
+            </button>
+          )}
           <p className="text-[11px] font-bold text-blue-700 dark:text-blue-400">
             Health Guardian AI • Clean & Professional
           </p>

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { User, Save, CheckCircle2, Shield, HeartPulse } from 'lucide-react';
+import { User, Save, CheckCircle2, Shield, HeartPulse, LogOut } from 'lucide-react';
 import { UserProfile } from '../types';
 
 interface ProfileViewProps {
   user: UserProfile;
   onUpdateUser: (updated: Partial<UserProfile>) => void;
+  onLogout?: () => void;
 }
 
-export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser }) => {
+export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, onLogout }) => {
   const [name, setName] = useState<string>(user.name);
   const [email, setEmail] = useState<string>(user.email);
   const [age, setAge] = useState<number>(user.age);
@@ -171,12 +172,29 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser }) 
 
         <button
           type="submit"
-          className="w-full py-3.5 rounded-full bg-primary text-on-primary font-bold text-sm shadow-md hover:bg-primary-dark transition-all flex items-center justify-center gap-2"
+          className="w-full py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
           <Save className="w-4 h-4" />
           <span>Save Changes</span>
         </button>
       </form>
+
+      {/* Account Security & Sign Out Section */}
+      {onLogout && (
+        <div className="rounded-3xl p-6 bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">Active Session Security</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Logged in as {user.email}. Click below to end your active session.</p>
+          </div>
+          <button
+            onClick={onLogout}
+            className="w-full sm:w-auto py-2.5 px-5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/60 font-bold text-xs transition-all flex items-center justify-center gap-2 border border-rose-100 dark:border-rose-900/50 cursor-pointer"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Sign Out / Log Out</span>
+          </button>
+        </div>
+      )}
 
     </div>
   );

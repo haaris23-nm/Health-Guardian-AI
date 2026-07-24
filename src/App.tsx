@@ -18,6 +18,7 @@ import { SettingsView } from './components/SettingsView';
 import { CodeVaultView } from './components/CodeVaultView';
 import { PrescriptionView } from './components/PrescriptionView';
 import { QuickLogModal } from './components/QuickLogModal';
+import { AuthView } from './components/AuthView';
 import { UserProfile, HealthMetrics, MedicineReminder, WaterLog, MoodLog } from './types';
 
 export default function App() {
@@ -25,6 +26,12 @@ export default function App() {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [darkMode, setDarkMode] = useState<boolean>(true);
   const [quickLogOpen, setQuickLogOpen] = useState<boolean>(false);
+
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    const saved = localStorage.getItem('health_guardian_auth_user');
+    return saved !== null;
+  });
 
   // Apply dark mode class to html document root
   useEffect(() => {
@@ -36,15 +43,36 @@ export default function App() {
   }, [darkMode]);
 
   // User Profile State
-  const [user, setUser] = useState<UserProfile>({
-    name: 'Alex Johnson',
-    email: 'alex.johnson@healthmate.ai',
-    age: 28,
-    gender: 'male',
-    heightCm: 178,
-    weightKg: 74,
-    goal: 'maintain',
+  const [user, setUser] = useState<UserProfile>(() => {
+    const saved = localStorage.getItem('health_guardian_auth_user');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return {
+      name: 'Alex Johnson',
+      email: 'alex.johnson@healthmate.ai',
+      age: 28,
+      gender: 'male',
+      heightCm: 178,
+      weightKg: 74,
+      goal: 'maintain',
+    };
   });
+
+  const handleLoginSuccess = (loggedInUser: UserProfile) => {
+    setUser(loggedInUser);
+    setIsAuthenticated(true);
+    localStorage.setItem('health_guardian_auth_user', JSON.stringify(loggedInUser));
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('health_guardian_auth_user');
+    setIsAuthenticated(false);
+  };
 
   // Health Metrics State
   const [metrics, setMetrics] = useState<HealthMetrics>({
@@ -192,6 +220,11 @@ export default function App() {
     }
   };
 
+  // If user is not logged in, render the Auth Gateway
+  if (!isAuthenticated) {
+    return <AuthView onLoginSuccess={handleLoginSuccess} defaultEmail={user.email} />;
+  }
+
   return (
     <div className="min-h-screen bg-[#F3F4F9] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans flex flex-col">
       
@@ -202,7 +235,9 @@ export default function App() {
         onToggleDarkMode={() => setDarkMode(!darkMode)}
         onOpenCodeVault={() => setCurrentView('code_vault')}
         onOpenProfile={() => setCurrentView('profile')}
+        onLogout={handleLogout}
         activeView={currentView}
+        userName={user.name}
       />
 
       {/* Slide-out Navigation Drawer */}
@@ -212,6 +247,7 @@ export default function App() {
         currentView={currentView}
         userName={user.name}
         userEmail={user.email}
+        onLogout={handleLogout}
         onNavigate={(view) => {
           setCurrentView(view);
           setDrawerOpen(false);
@@ -276,7 +312,11 @@ export default function App() {
         {currentView === 'chatbot' && <ChatbotView />}
 
         {currentView === 'profile' && (
-          <ProfileView user={user} onUpdateUser={(updated) => setUser((prev) => ({ ...prev, ...updated }))} />
+          <ProfileView
+            user={user}
+            onUpdateUser={(updated) => setUser((prev) => ({ ...prev, ...updated }))}
+            onLogout={handleLogout}
+          />
         )}
 
         {currentView === 'settings' && (
