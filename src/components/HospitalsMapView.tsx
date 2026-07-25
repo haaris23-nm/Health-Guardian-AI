@@ -338,16 +338,16 @@ export const HospitalsMapView: React.FC = () => {
             </div>
           </div>
 
-          {/* Floating Hospital Marker Selectors */}
-          <div className="relative z-10 px-3 py-1.5 my-auto flex gap-2 overflow-x-auto">
+          {/* Top Floating Hospital Marker Selectors (Moved to Top) */}
+          <div className="relative z-10 mx-2.5 -mt-1 mb-auto p-1.5 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-700/80 flex gap-2 overflow-x-auto shadow-sm">
             {hospitals.map((h) => (
               <button
                 key={h.id}
                 onClick={() => setSelectedHospital(h)}
                 className={`px-3 py-1.5 rounded-xl font-bold text-xs whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 backdrop-blur-md border ${
                   selectedHospital?.id === h.id
-                    ? 'bg-rose-600 text-white border-rose-400 shadow-md scale-105'
-                    : 'bg-slate-900/80 text-slate-200 border-slate-700 hover:bg-slate-800'
+                    ? 'bg-rose-600 text-white border-rose-400 shadow-md scale-102'
+                    : 'bg-slate-800/90 text-slate-200 border-slate-700 hover:bg-slate-700'
                 }`}
               >
                 <Building2 className="w-3.5 h-3.5" />
