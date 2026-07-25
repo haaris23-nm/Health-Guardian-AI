@@ -52,12 +52,12 @@ export default function App() {
       }
     }
     return {
-      name: 'Alex Johnson',
-      email: 'alex.johnson@healthmate.ai',
-      age: 28,
+      name: 'Haarisrafi2006',
+      email: 'haarisrafi2006@gmail.com',
+      age: 30,
       gender: 'male',
-      heightCm: 178,
-      weightKg: 74,
+      heightCm: 175,
+      weightKg: 72,
       goal: 'maintain',
     };
   });
@@ -67,6 +67,9 @@ export default function App() {
     setIsAuthenticated(true);
     setCurrentView('dashboard');
     localStorage.setItem('health_guardian_auth_user', JSON.stringify(loggedInUser));
+    if (loggedInUser.email) {
+      localStorage.setItem(`health_user_${loggedInUser.email.toLowerCase()}`, JSON.stringify(loggedInUser));
+    }
   };
 
   const handleLogout = () => {
@@ -76,74 +79,147 @@ export default function App() {
   };
 
   // Health Metrics State
-  const [metrics, setMetrics] = useState<HealthMetrics>({
-    bmi: 23.4,
-    bmiCategory: 'Normal weight',
-    weightKg: 74,
-    heightCm: 178,
-    waterIntakeMl: 1750,
-    waterGoalMl: 2500,
-    sleepHours: 7.5,
-    sleepGoalHours: 8.0,
-    caloriesBurned: 1840,
-    caloriesGoal: 2200,
-    stepsCount: 8420,
-    stepsGoal: 10000,
-    heartRateBpm: 72,
-    systolicBp: 118,
-    diastolicBp: 78,
+  const [metrics, setMetrics] = useState<HealthMetrics>(() => {
+    const saved = localStorage.getItem('health_guardian_metrics');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return {
+      bmi: 23.5,
+      bmiCategory: 'Normal weight',
+      weightKg: 72,
+      heightCm: 175,
+      waterIntakeMl: 1750,
+      waterGoalMl: 2500,
+      sleepHours: 7.5,
+      sleepGoalHours: 8.0,
+      caloriesBurned: 1840,
+      caloriesGoal: 2200,
+      stepsCount: 8420,
+      stepsGoal: 10000,
+      heartRateBpm: 72,
+      systolicBp: 118,
+      diastolicBp: 78,
+    };
   });
 
+  useEffect(() => {
+    localStorage.setItem('health_guardian_metrics', JSON.stringify(metrics));
+  }, [metrics]);
+
   // Water Logs State
-  const [waterLogs, setWaterLogs] = useState<WaterLog[]>([
-    { id: 'w1', amountMl: 500, timestamp: '08:15 AM' },
-    { id: 'w2', amountMl: 250, timestamp: '10:30 AM' },
-    { id: 'w3', amountMl: 500, timestamp: '01:00 PM' },
-    { id: 'w4', amountMl: 500, timestamp: '03:45 PM' },
-  ]);
+  const [waterLogs, setWaterLogs] = useState<WaterLog[]>(() => {
+    const saved = localStorage.getItem('health_guardian_water_logs');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return [
+      { id: 'w1', amountMl: 500, timestamp: '08:15 AM' },
+      { id: 'w2', amountMl: 250, timestamp: '10:30 AM' },
+      { id: 'w3', amountMl: 500, timestamp: '01:00 PM' },
+      { id: 'w4', amountMl: 500, timestamp: '03:45 PM' },
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('health_guardian_water_logs', JSON.stringify(waterLogs));
+  }, [waterLogs]);
 
   // Medicine Reminders State
-  const [reminders, setReminders] = useState<MedicineReminder[]>([
-    {
-      id: 'm1',
-      name: 'Multivitamin Complex',
-      dosage: '1 Tablet',
-      time: '08:00 AM',
-      days: ['Daily'],
-      takenToday: true,
-      notes: 'Take after morning breakfast with water',
-    },
-    {
-      id: 'm2',
-      name: 'Omega 3 Fish Oil',
-      dosage: '1000 mg',
-      time: '01:30 PM',
-      days: ['Daily'],
-      takenToday: true,
-      notes: 'Supports cardiovascular & heart rate health',
-    },
-    {
-      id: 'm3',
-      name: 'Magnesium Glycinate',
-      dosage: '200 mg',
-      time: '09:30 PM',
-      days: ['Mon', 'Wed', 'Fri'],
-      takenToday: false,
-      notes: 'Promotes muscle relaxation & deep REM sleep',
-    },
-  ]);
+  const [reminders, setReminders] = useState<MedicineReminder[]>(() => {
+    const saved = localStorage.getItem('health_guardian_reminders');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return [
+      {
+        id: 'm1',
+        name: 'Multivitamin Complex',
+        dosage: '1 Tablet',
+        time: '08:00 AM',
+        days: ['Daily'],
+        takenToday: true,
+        notes: 'Take after morning breakfast with water',
+      },
+      {
+        id: 'm2',
+        name: 'Omega 3 Fish Oil',
+        dosage: '1000 mg',
+        time: '01:30 PM',
+        days: ['Daily'],
+        takenToday: true,
+        notes: 'Supports cardiovascular & heart rate health',
+      },
+      {
+        id: 'm3',
+        name: 'Magnesium Glycinate',
+        dosage: '200 mg',
+        time: '09:30 PM',
+        days: ['Mon', 'Wed', 'Fri'],
+        takenToday: false,
+        notes: 'Promotes muscle relaxation & deep REM sleep',
+      },
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('health_guardian_reminders', JSON.stringify(reminders));
+  }, [reminders]);
 
   // Mood Logs State
-  const [moodLogs, setMoodLogs] = useState<MoodLog[]>([
-    {
-      id: 'mood_1',
-      moodLevel: 4,
-      moodLabel: 'Good',
-      notes: 'Finished morning jog and felt energized!',
-      aiSuggestion: 'Great momentum! Physical morning exercise triggers endorphin release.',
-      timestamp: 'Today at 09:30 AM',
-    },
-  ]);
+  const [moodLogs, setMoodLogs] = useState<MoodLog[]>(() => {
+    const saved = localStorage.getItem('health_guardian_mood_logs');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return [
+      {
+        id: 'mood_1',
+        moodLevel: 4,
+        moodLabel: 'Good',
+        notes: 'Finished morning jog and felt energized!',
+        aiSuggestion: 'Great momentum! Physical morning exercise triggers endorphin release.',
+        timestamp: 'Today at 09:30 AM',
+      },
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('health_guardian_mood_logs', JSON.stringify(moodLogs));
+  }, [moodLogs]);
+
+  const handleUpdateUserProfile = (updated: Partial<UserProfile>) => {
+    setUser((prev) => {
+      const newUser = { ...prev, ...updated };
+      localStorage.setItem('health_guardian_auth_user', JSON.stringify(newUser));
+      if (newUser.email) {
+        localStorage.setItem(`health_user_${newUser.email.toLowerCase()}`, JSON.stringify(newUser));
+      }
+      return newUser;
+    });
+
+    if (updated.weightKg || updated.heightCm) {
+      setMetrics((prev) => {
+        const h = updated.heightCm || prev.heightCm;
+        const w = updated.weightKg || prev.weightKg;
+        const heightM = h / 100;
+        const bmiVal = Number((w / (heightM * heightM)).toFixed(1));
+        let category = 'Normal weight';
+        if (bmiVal < 18.5) category = 'Underweight';
+        else if (bmiVal < 25) category = 'Normal weight';
+        else if (bmiVal < 30) category = 'Overweight';
+        else category = 'Obese';
+
+        return {
+          ...prev,
+          heightCm: h,
+          weightKg: w,
+          bmi: bmiVal,
+          bmiCategory: category,
+        };
+      });
+    }
+  };
 
   // Handlers
   const handleUpdateBmiMetrics = (heightCm: number, weightKg: number) => {
@@ -315,7 +391,7 @@ export default function App() {
         {currentView === 'profile' && (
           <ProfileView
             user={user}
-            onUpdateUser={(updated) => setUser((prev) => ({ ...prev, ...updated }))}
+            onUpdateUser={handleUpdateUserProfile}
             onLogout={handleLogout}
           />
         )}

@@ -48,23 +48,45 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail
 
     setLoading(true);
     setTimeout(() => {
-      // Create user profile based on input email or use demo if matching
-      const userName = loginEmail.split('@')[0].replace('.', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
-      const user: UserProfile = {
-        id: `usr_${Date.now()}`,
-        name: userName || 'Authenticated Patient',
-        email: loginEmail,
-        age: 30,
-        gender: 'male',
-        heightCm: 175,
-        weightKg: 72,
-        goal: 'maintain',
-        activityLevel: 'moderate',
-      };
+      const emailKey = `health_user_${loginEmail.trim().toLowerCase()}`;
+      const savedUserStr = localStorage.getItem(emailKey);
+      let user: UserProfile;
 
-      if (rememberMe) {
-        localStorage.setItem('health_guardian_auth_user', JSON.stringify(user));
+      if (savedUserStr) {
+        try {
+          user = JSON.parse(savedUserStr);
+        } catch (e) {
+          console.error(e);
+          const userName = loginEmail.split('@')[0].replace('.', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+          user = {
+            id: `usr_${Date.now()}`,
+            name: userName || 'Authenticated Patient',
+            email: loginEmail,
+            age: 30,
+            gender: 'male',
+            heightCm: 175,
+            weightKg: 72,
+            goal: 'maintain',
+            activityLevel: 'moderate',
+          };
+        }
+      } else {
+        const userName = loginEmail.split('@')[0].replace('.', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+        user = {
+          id: `usr_${Date.now()}`,
+          name: userName || 'Authenticated Patient',
+          email: loginEmail,
+          age: 30,
+          gender: 'male',
+          heightCm: 175,
+          weightKg: 72,
+          goal: 'maintain',
+          activityLevel: 'moderate',
+        };
       }
+
+      localStorage.setItem('health_guardian_auth_user', JSON.stringify(user));
+      localStorage.setItem(emailKey, JSON.stringify(user));
 
       onLoginSuccess(user);
       setLoading(false);
@@ -115,7 +137,9 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail
         activityLevel: 'moderate',
       };
 
+      const emailKey = `health_user_${regEmail.trim().toLowerCase()}`;
       localStorage.setItem('health_guardian_auth_user', JSON.stringify(newRegisteredUser));
+      localStorage.setItem(emailKey, JSON.stringify(newRegisteredUser));
       onLoginSuccess(newRegisteredUser);
       setLoading(false);
     }, 700);
