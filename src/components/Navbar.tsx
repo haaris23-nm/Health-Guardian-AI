@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Sun, Moon, Code2, HeartPulse, User, LogOut } from 'lucide-react';
+import { Menu, Sun, Moon, HeartPulse, User, LogOut } from 'lucide-react';
 
 interface NavbarProps {
   darkMode: boolean;
@@ -7,7 +7,7 @@ interface NavbarProps {
   setDarkMode?: (val: boolean) => void;
   onOpenDrawer?: () => void;
   onToggleDrawer?: () => void;
-  onOpenCodeVault: () => void;
+  onOpenCodeVault?: () => void;
   onOpenProfile?: () => void;
   onLogout?: () => void;
   activeView?: string;
@@ -66,16 +66,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Android & Flask Code Vault Button */}
-          <button
-            onClick={onOpenCodeVault}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-slate-700 text-xs font-bold transition-all border border-blue-100 dark:border-slate-700 cursor-pointer"
-            title="Android & Flask Source Code"
-          >
-            <Code2 className="w-4 h-4 text-blue-600" />
-            <span className="hidden sm:inline">Source Code</span>
-          </button>
-
           {/* Dark / Light Theme Toggle */}
           <button
             onClick={toggleThemeHandler}
