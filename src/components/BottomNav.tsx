@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Sparkles, Activity, Building2, Code2, Plus } from 'lucide-react';
+import { LayoutDashboard, Sparkles, Activity, Building2, Plus } from 'lucide-react';
 
 interface BottomNavProps {
   currentView?: string;
@@ -24,7 +24,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     { id: 'chatbot', label: 'AI Chat', icon: Sparkles },
     { id: 'fab', label: 'Quick Log', icon: Plus, isFab: true },
     { id: 'reports', label: 'Records', icon: Activity },
-    { id: 'code_vault', label: 'Source', icon: Code2 },
+    { id: 'hospitals', label: 'Hospitals', icon: Building2 },
   ];
 
   return (

@@ -71,12 +71,16 @@ let waterLogs = [
   { id: "w_4", amountMl: 500, timestamp: "05:00 PM" },
 ];
 
-// Hospital list mock database
+// Hospital list mock database (Indian Hospitals & ER Centers with Pinpoint GPS Coordinates)
 const HOSPITALS = [
-  { id: "h_1", name: "St. Jude Memorial Hospital", address: "1244 Healthcare Blvd, Medical District", distanceKm: 1.2, rating: 4.8, phone: "+1 (555) 234-5678", lat: 37.7749, lng: -122.4194, open24h: true, emergencyServices: true },
-  { id: "h_2", name: "City General Medical Center", address: "890 Wellness Way, Downtown", distanceKm: 2.5, rating: 4.6, phone: "+1 (555) 876-5432", lat: 37.7833, lng: -122.4167, open24h: true, emergencyServices: true },
-  { id: "h_3", name: "Apex Community Health Clinic", address: "450 Hope Avenue, Westside", distanceKm: 3.8, rating: 4.4, phone: "+1 (555) 345-6789", lat: 37.765, lng: -122.43, open24h: false, emergencyServices: false },
-  { id: "h_4", name: "Valley Urgent Care & ER", address: "102 Sunrise Blvd, North Valley", distanceKm: 5.1, rating: 4.7, phone: "+1 (555) 901-2345", lat: 37.79, lng: -122.405, open24h: true, emergencyServices: true },
+  { id: "h_1", name: "AIIMS (All India Institute of Medical Sciences)", address: "Ansari Nagar East, Ring Road, New Delhi - 110029", distanceKm: 1.2, rating: 4.9, phone: "+91 11 2658 8500", lat: 28.5672, lng: 77.2100, open24h: true, emergencyServices: true },
+  { id: "h_2", name: "Apollo Hospitals Greams Road", address: "Greams Lane, Off Greams Rd, Thousand Lights, Chennai, Tamil Nadu - 600006", distanceKm: 2.5, rating: 4.8, phone: "+91 44 2829 0200", lat: 13.0604, lng: 80.2496, open24h: true, emergencyServices: true },
+  { id: "h_3", name: "Fortis Memorial Research Institute (FMRI)", address: "Sector 44, Opp HUDA City Centre, Gurugram, Delhi NCR - 122002", distanceKm: 3.8, rating: 4.7, phone: "+91 124 4921 021", lat: 28.4595, lng: 77.0725, open24h: true, emergencyServices: true },
+  { id: "h_4", name: "Manipal Hospital HAL Airport Road", address: "98 HAL Old Airport Rd, Kodihalli, Bengaluru, Karnataka - 560017", distanceKm: 4.2, rating: 4.8, phone: "+91 1800 102 5555", lat: 12.9583, lng: 77.6492, open24h: true, emergencyServices: true },
+  { id: "h_5", name: "Max Super Speciality Hospital Saket", address: "1, 2 Press Enclave Marg, Saket, New Delhi - 110017", distanceKm: 5.1, rating: 4.7, phone: "+91 11 2651 5050", lat: 28.5280, lng: 77.2118, open24h: true, emergencyServices: true },
+  { id: "h_6", name: "Lilavati Hospital & Research Centre", address: "A-791, Bandra Reclamation, Bandra West, Mumbai, Maharashtra - 400050", distanceKm: 6.4, rating: 4.6, phone: "+91 22 2675 1000", lat: 19.0518, lng: 72.8288, open24h: true, emergencyServices: true },
+  { id: "h_7", name: "Medanta - The Medicity", address: "CH Baktawar Singh Rd, Sector 38, Gurugram, Haryana - 122001", distanceKm: 7.0, rating: 4.9, phone: "+91 124 4141 414", lat: 28.4385, lng: 77.0428, open24h: true, emergencyServices: true },
+  { id: "h_8", name: "Tata Memorial Hospital", address: "Dr. E Borges Road, Parel, Mumbai, Maharashtra - 400012", distanceKm: 8.2, rating: 4.9, phone: "+91 22 2417 7000", lat: 19.0028, lng: 72.8427, open24h: true, emergencyServices: true },
 ];
 
 // --- REST API ENDPOINTS ---
@@ -668,18 +672,19 @@ app.get("/api/hospitals", async (req, res) => {
     // If query doesn't match default mock list and Gemini is available, search real hospitals in that location!
     if (filtered.length === 0 && ai) {
       try {
-        const prompt = `Provide a JSON array of 4 real or highly accurate top medical centers/hospitals located in or near "${query}".
+        const prompt = `Provide a JSON array of 4 real, highly accurate top medical centers or hospitals in or near "${query}", India (or specified location).
+Ensure exact Indian telephone numbers (+91 ...), full street addresses with PIN codes, accurate lat/lng coordinates for map rendering, 24/7 ER availability, and rating.
 Return JSON array with exact format:
 [
   {
     "id": "h_gen_1",
     "name": "Full Hospital Name",
-    "address": "Full Street Address, City, Country",
-    "distanceKm": 1.5,
-    "rating": 4.7,
-    "phone": "+1 (555) 000-0000",
-    "lat": 37.7749,
-    "lng": -122.4194,
+    "address": "Full Street Address, City, State - PIN Code, India",
+    "distanceKm": 2.1,
+    "rating": 4.8,
+    "phone": "+91 11 2345 6789",
+    "lat": 28.6139,
+    "lng": 77.2090,
     "open24h": true,
     "emergencyServices": true
   }

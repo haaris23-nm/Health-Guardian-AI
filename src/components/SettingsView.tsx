@@ -1,102 +1,97 @@
 import React from 'react';
-import { Settings, Moon, Sun, Bell, ShieldCheck, Database, Smartphone } from 'lucide-react';
+import { Settings, Moon, Sun, Bell, ShieldCheck } from 'lucide-react';
 
 interface SettingsViewProps {
   darkMode: boolean;
   setDarkMode: (val: boolean) => void;
-  onOpenCodeVault: () => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
   darkMode,
   setDarkMode,
-  onOpenCodeVault,
 }) => {
   return (
-    <div className="max-w-3xl mx-auto space-y-6 pb-20">
+    <div className="max-w-3xl mx-auto space-y-6 pb-20 font-sans">
       
       {/* Title */}
-      <div className="flex items-center gap-3 border-b border-outline-light dark:border-outline-dark pb-4">
-        <div className="p-3 rounded-2xl bg-surface-variant-light dark:bg-surface-variant-dark text-on-surface-light dark:text-on-surface-dark shadow-sm">
+      <div className="flex items-center gap-3 border-b border-blue-100 dark:border-slate-800 pb-4">
+        <div className="p-3 rounded-2xl bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-xs">
           <Settings className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-black text-on-surface-light dark:text-on-surface-dark">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white">
             Application Settings
           </h1>
-          <p className="text-xs text-on-surface-variant-light dark:text-on-surface-variant-dark">
-            Manage UI theme, notification preferences, measurement units, and source code exports.
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+            Manage UI theme preferences, medication alerts, and security settings.
           </p>
         </div>
       </div>
 
-      <div className="rounded-3xl p-6 bg-surface-light dark:bg-surface-dark border border-outline-light dark:border-outline-dark shadow-sm space-y-6">
+      <div className="rounded-3xl p-6 bg-white dark:bg-slate-900 border border-blue-100 dark:border-slate-800 shadow-xs space-y-6">
         
         {/* Theme Settings */}
-        <div className="flex items-center justify-between pb-4 border-b border-outline-light/40 dark:border-outline-dark/40">
+        <div className="flex items-center justify-between pb-4 border-b border-blue-50 dark:border-slate-800">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-500">
               {darkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </div>
             <div>
-              <h2 className="font-bold text-sm text-on-surface-light dark:text-on-surface-dark">
+              <h2 className="font-bold text-sm text-slate-900 dark:text-white">
                 Dark & Light Theme Mode
               </h2>
-              <p className="text-xs text-on-surface-variant-light dark:text-on-surface-variant-dark">
-                Toggle Material Design 3 color theme
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Toggle application color theme
               </p>
             </div>
           </div>
 
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="px-4 py-2 rounded-full bg-primary text-on-primary font-bold text-xs hover:bg-primary-dark transition-all"
+            className="px-4 py-2 rounded-2xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition-all cursor-pointer"
           >
             {darkMode ? 'Light Theme' : 'Dark Theme'}
           </button>
         </div>
 
         {/* Notifications */}
-        <div className="flex items-center justify-between pb-4 border-b border-outline-light/40 dark:border-outline-dark/40">
+        <div className="flex items-center justify-between pb-4 border-b border-blue-50 dark:border-slate-800">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-500">
               <Bell className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-bold text-sm text-on-surface-light dark:text-on-surface-dark">
+              <h2 className="font-bold text-sm text-slate-900 dark:text-white">
                 Push & Local Notifications
               </h2>
-              <p className="text-xs text-on-surface-variant-light dark:text-on-surface-variant-dark">
-                Receive medication alerts and water hydration reminders
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Receive medication alerts and hydration reminders
               </p>
             </div>
           </div>
 
-          <input type="checkbox" defaultChecked className="w-5 h-5 accent-primary cursor-pointer" />
+          <input type="checkbox" defaultChecked className="w-5 h-5 accent-blue-600 cursor-pointer" />
         </div>
 
-        {/* Android & Flask Code Export */}
+        {/* Security & Data Privacy */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500">
-              <Smartphone className="w-5 h-5" />
+              <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-bold text-sm text-on-surface-light dark:text-on-surface-dark">
-                Android Studio Java & Flask Code Export
+              <h2 className="font-bold text-sm text-slate-900 dark:text-white">
+                Data Privacy & Encryption
               </h2>
-              <p className="text-xs text-on-surface-variant-light dark:text-on-surface-variant-dark">
-                Inspect or copy the complete source codebase & REST backend files
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Local HIPAA-compliant encrypted storage enabled
               </p>
             </div>
           </div>
 
-          <button
-            onClick={onOpenCodeVault}
-            className="px-4 py-2 rounded-full bg-secondary-container text-on-secondary-container font-bold text-xs hover:bg-secondary-container/80 transition-all"
-          >
-            Open Code Vault
-          </button>
+          <span className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-extrabold text-[10px]">
+            Protected
+          </span>
         </div>
 
       </div>

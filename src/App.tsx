@@ -15,7 +15,6 @@ import { HealthReportsView } from './components/HealthReportsView';
 import { ChatbotView } from './components/ChatbotView';
 import { ProfileView } from './components/ProfileView';
 import { SettingsView } from './components/SettingsView';
-import { CodeVaultView } from './components/CodeVaultView';
 import { PrescriptionView } from './components/PrescriptionView';
 import { QuickLogModal } from './components/QuickLogModal';
 import { AuthView } from './components/AuthView';
@@ -323,11 +322,8 @@ export default function App() {
           <SettingsView
             darkMode={darkMode}
             setDarkMode={setDarkMode}
-            onOpenCodeVault={() => setCurrentView('code_vault')}
           />
         )}
-
-        {currentView === 'code_vault' && <CodeVaultView />}
       </main>
 
       {/* Quick FAB Modal */}

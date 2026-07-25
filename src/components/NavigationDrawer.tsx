@@ -13,7 +13,6 @@ import {
   Bot,
   User,
   Settings,
-  Code2,
   X,
   HeartPulse,
   Sparkles,
@@ -81,10 +80,9 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
       ],
     },
     {
-      title: 'Services & Developer Tools',
+      title: 'Emergency Services',
       items: [
         { id: 'hospitals', label: 'Nearby Hospitals & ER', icon: Building2 },
-        { id: 'code_vault', label: 'Android & Flask Code Vault', icon: Code2, highlight: true },
       ],
     },
   ];
