@@ -143,33 +143,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, on
           </div>
         </div>
 
-        <div>
-          <label className="block text-xs font-bold uppercase text-on-surface-variant-light dark:text-on-surface-variant-dark mb-2">
-            Fitness Target Goal
-          </label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {[
-              { id: 'lose_weight', label: 'Fat Loss' },
-              { id: 'maintain', label: 'Maintain' },
-              { id: 'gain_muscle', label: 'Muscle Gain' },
-              { id: 'improve_stamina', label: 'Stamina' },
-            ].map((g) => (
-              <button
-                type="button"
-                key={g.id}
-                onClick={() => setGoal(g.id as any)}
-                className={`py-2 px-3 rounded-xl text-xs font-bold transition-all ${
-                  goal === g.id
-                    ? 'bg-primary text-on-primary'
-                    : 'bg-surface-variant-light dark:bg-surface-variant-dark text-on-surface-light dark:text-on-surface-dark'
-                }`}
-              >
-                {g.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         <button
           type="submit"
           className="w-full py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
