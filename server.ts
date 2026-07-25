@@ -324,36 +324,93 @@ Return a JSON object matching this schema:
 
 // AI Diet Planner API
 app.post("/api/diet-plan", async (req, res) => {
-  const { age, gender, heightCm, weightKg, goal } = req.body;
-  const userAge = age || currentUser.age;
+  const { age, gender, heightCm, weightKg, goal, dietaryPreference, cuisine, allergies } = req.body;
+  const userAge = Number(age) || currentUser.age;
   const userGender = gender || currentUser.gender;
-  const userHeight = heightCm || currentUser.heightCm;
-  const userWeight = weightKg || currentUser.weightKg;
+  const userHeight = Number(heightCm) || currentUser.heightCm;
+  const userWeight = Number(weightKg) || currentUser.weightKg;
   const userGoal = goal || currentUser.goal;
+  const pref = dietaryPreference || 'veg';
+  const cuisineStyle = cuisine || 'indian';
+  const allergyNotes = allergies || 'None';
+
+  // Calculate dynamic BMR & TDEE
+  const bmr = userGender === 'female' 
+    ? (10 * userWeight) + (6.25 * userHeight) - (5 * userAge) - 161 
+    : (10 * userWeight) + (6.25 * userHeight) - (5 * userAge) + 5;
+  const tdee = Math.round(bmr * 1.375);
+
+  let targetCalories = tdee;
+  if (userGoal === 'lose_weight') targetCalories = Math.max(1400, Math.round(tdee - 450));
+  else if (userGoal === 'gain_muscle') targetCalories = Math.round(tdee + 350);
+  else if (userGoal === 'improve_stamina') targetCalories = Math.round(tdee + 150);
+
+  // Helper generator function for fallback / offline mode
+  const generateCustomMealPlan = () => {
+    let proteinG = Math.round((targetCalories * 0.28) / 4);
+    let carbsG = Math.round((targetCalories * 0.48) / 4);
+    let fatG = Math.round((targetCalories * 0.24) / 9);
+
+    if (pref === 'keto') {
+      carbsG = Math.round((targetCalories * 0.10) / 4);
+      fatG = Math.round((targetCalories * 0.65) / 9);
+      proteinG = Math.round((targetCalories * 0.25) / 4);
+    } else if (pref === 'high_protein' || userGoal === 'gain_muscle') {
+      proteinG = Math.round(userWeight * 2.2);
+      carbsG = Math.round((targetCalories - (proteinG * 4) - (fatG * 9)) / 4);
+    }
+
+    let breakfast = { name: "Indian Paneer & Spinach Sprouted Toast", items: ["100g spiced scrambled Paneer", "2 slices multigrain bread", "1 cup green tea with lemon"], calories: Math.round(targetCalories * 0.25), proteinGrams: Math.round(proteinG * 0.25), carbsGrams: Math.round(carbsG * 0.25), fatGrams: Math.round(fatG * 0.25) };
+    let lunch = { name: "High-Protein Chana Dal & Quinoa Power Bowl", items: ["1.5 cups cooked Chickpeas / Chana Dal", "1 cup steamed Quinoa / Brown Rice", "Cucumber & Tomato mint salad with olive oil"], calories: Math.round(targetCalories * 0.35), proteinGrams: Math.round(proteinG * 0.35), carbsGrams: Math.round(carbsG * 0.35), fatGrams: Math.round(fatG * 0.35) };
+    let dinner = { name: "Palak Tofu / Paneer Curry & Multigrain Roti", items: ["150g Cottage Cheese / Tofu in Spinach Gravy", "2 whole wheat Rotis", "Steamed broccoli & bell peppers"], calories: Math.round(targetCalories * 0.28), proteinGrams: Math.round(proteinG * 0.28), carbsGrams: Math.round(carbsG * 0.28), fatGrams: Math.round(fatG * 0.28) };
+    let snacks = { name: "Roasted Makhana & Greek Yogurt", items: ["1 cup Plain Greek Yogurt", "30g spiced roasted Makhana (Foxnuts)", "10 Almonds"], calories: Math.round(targetCalories * 0.12), proteinGrams: Math.round(proteinG * 0.12), carbsGrams: Math.round(carbsG * 0.12), fatGrams: Math.round(fatG * 0.12) };
+
+    if (pref === 'non_veg') {
+      breakfast = { name: "3-Egg Omelette & Avocado Wholewheat Toast", items: ["2 whole eggs + 2 egg whites with spinach & peppers", "1 slice sourdough toast", "Black coffee or green tea"], calories: Math.round(targetCalories * 0.25), proteinGrams: Math.round(proteinG * 0.25), carbsGrams: Math.round(carbsG * 0.25), fatGrams: Math.round(fatG * 0.25) };
+      lunch = { name: "Grilled Chicken Breast & Roasted Sweet Potato", items: ["180g marinated grilled chicken breast", "150g baked sweet potato cubes", "Steamed asparagus & lemon olive oil dressing"], calories: Math.round(targetCalories * 0.35), proteinGrams: Math.round(proteinG * 0.35), carbsGrams: Math.round(carbsG * 0.35), fatGrams: Math.round(fatG * 0.35) };
+      dinner = { name: "Pan-Seared Fish Fillet & Sautéed Green Beans", items: ["160g Atlantic Salmon or Tilapia fillet", "1 cup sautéed zucchini & bell peppers", "1/2 cup cooked brown rice"], calories: Math.round(targetCalories * 0.28), proteinGrams: Math.round(proteinG * 0.28), carbsGrams: Math.round(carbsG * 0.28), fatGrams: Math.round(fatG * 0.28) };
+      snacks = { name: "Whey Protein Shake & Walnuts", items: ["1 scoop Whey Protein in almond milk", "12 raw walnuts"], calories: Math.round(targetCalories * 0.12), proteinGrams: Math.round(proteinG * 0.12), carbsGrams: Math.round(carbsG * 0.12), fatGrams: Math.round(fatG * 0.12) };
+    } else if (pref === 'vegan') {
+      breakfast = { name: "Chia Seed Berry Pudding & Soy Protein Bowl", items: ["3 tbsp chia seeds soaked in unsweetened soy milk", "1/2 cup blueberries & pumpkin seeds"], calories: Math.round(targetCalories * 0.25), proteinGrams: Math.round(proteinG * 0.25), carbsGrams: Math.round(carbsG * 0.25), fatGrams: Math.round(fatG * 0.25) };
+      lunch = { name: "Edamame & Tofu Quinoa Buddah Bowl", items: ["150g firm grilled Tofu", "1/2 cup Edamame beans", "1 cup quinoa with avocado dressing"], calories: Math.round(targetCalories * 0.35), proteinGrams: Math.round(proteinG * 0.35), carbsGrams: Math.round(carbsG * 0.35), fatGrams: Math.round(fatG * 0.35) };
+      dinner = { name: "Red Lentil Dahl & Brown Rice Bowl", items: ["1.5 cups yellow/red lentil curry", "3/4 cup brown rice", "Mixed cucumber salad"], calories: Math.round(targetCalories * 0.28), proteinGrams: Math.round(proteinG * 0.28), carbsGrams: Math.round(carbsG * 0.28), fatGrams: Math.round(fatG * 0.28) };
+      snacks = { name: "Roasted Spicy Chickpeas & Roasted Almonds", items: ["1/2 cup oven-roasted spicy chickpeas", "15 almonds"], calories: Math.round(targetCalories * 0.12), proteinGrams: Math.round(proteinG * 0.12), carbsGrams: Math.round(carbsG * 0.12), fatGrams: Math.round(fatG * 0.12) };
+    } else if (pref === 'keto') {
+      breakfast = { name: "Keto Avocado Egg & Cheese Boat", items: ["2 whole eggs baked inside avocado half", "30g cheddar cheese", "Black coffee"], calories: Math.round(targetCalories * 0.25), proteinGrams: Math.round(proteinG * 0.25), carbsGrams: Math.round(carbsG * 0.25), fatGrams: Math.round(fatG * 0.25) };
+      lunch = { name: "Keto Grilled Cottage Cheese / Chicken & Avocado Salad", items: ["180g Paneer / Chicken breast", "1/2 whole avocado", "Baby spinach, olive oil & feta cheese"], calories: Math.round(targetCalories * 0.35), proteinGrams: Math.round(proteinG * 0.35), carbsGrams: Math.round(carbsG * 0.35), fatGrams: Math.round(fatG * 0.35) };
+      dinner = { name: "Butter Garlic Paneer / Salmon & Cauliflower Mash", items: ["160g Paneer or Fish in herb butter", "1 cup creamy cauliflower mash with garlic"], calories: Math.round(targetCalories * 0.28), proteinGrams: Math.round(proteinG * 0.28), carbsGrams: Math.round(carbsG * 0.28), fatGrams: Math.round(fatG * 0.28) };
+      snacks = { name: "Macadamia Nuts & String Cheese", items: ["20g Macadamia / Pecan nuts", "1 string cheese stick"], calories: Math.round(targetCalories * 0.12), proteinGrams: Math.round(proteinG * 0.12), carbsGrams: Math.round(carbsG * 0.12), fatGrams: Math.round(fatG * 0.12) };
+    }
+
+    return {
+      dailyCalories: targetCalories,
+      macros: { proteinG, carbsG, fatG },
+      meals: { breakfast, lunch, dinner, snacks },
+      keyAdvice: [
+        `Target total daily intake is strictly ${targetCalories} kcal tailored for ${userGoal.replace('_', ' ')}.`,
+        `Consistently meet your ${proteinG}g protein target to prevent lean muscle mass degradation.`,
+        `Drink 3.0 Liters of water throughout the day and avoid hidden liquid sugars.`,
+        `Observe medical restrictions: ${allergyNotes}.`
+      ]
+    };
+  };
 
   if (!ai) {
-    return res.json({
-      dailyCalories: userGoal === 'lose_weight' ? 1800 : userGoal === 'gain_muscle' ? 2400 : 2100,
-      macros: { proteinG: 130, carbsG: 220, fatG: 65 },
-      meals: {
-        breakfast: { name: "Oatmeal & Protein Berry Bowl", items: ["1 cup rolled oats cooked in almond milk", "1 scoop whey protein", "1/2 cup blueberries & chia seeds"], calories: 450, proteinGrams: 32, carbsGrams: 55, fatGrams: 8 },
-        lunch: { name: "Grilled Chicken Quinoa Salad", items: ["150g grilled chicken breast", "1 cup cooked quinoa", "Mixed greens, cherry tomatoes, olive oil dressing"], calories: 580, proteinGrams: 45, carbsGrams: 48, fatGrams: 16 },
-        dinner: { name: "Baked Salmon & Steamed Asparagus", items: ["160g Atlantic salmon fillet", "Steamed asparagus & sweet potato mash"], calories: 520, proteinGrams: 38, carbsGrams: 35, fatGrams: 20 },
-        snacks: { name: "Greek Yogurt & Almonds", items: ["150g plain 0% Greek yogurt", "15 raw almonds"], calories: 250, proteinGrams: 18, carbsGrams: 12, fatGrams: 12 }
-      },
-      keyAdvice: [
-        "Drink 500ml of water 30 minutes before each main meal.",
-        "Ensure protein intake is spread evenly across all 4 daily meals.",
-        "Prioritize whole, minimally processed foods over refined sugars."
-      ]
-    });
+    return res.json(generateCustomMealPlan());
   }
 
   try {
-    const prompt = `Create a customized daily diet plan for a ${userAge} year old ${userGender} (${userHeight} cm, ${userWeight} kg) with goal "${userGoal}".
-Return a JSON object:
+    const prompt = `Create an expert, highly specific 1-day meal plan for a ${userAge} y/o ${userGender} (${userHeight} cm, ${userWeight} kg).
+Goal: "${userGoal}".
+Dietary Choice: "${pref}" (Strictly observe: if veg or vegan, NO meat or seafood!).
+Cuisine preference: "${cuisineStyle}".
+Allergies / Restrictions: "${allergyNotes}".
+
+Target Caloric Budget: ~${targetCalories} kcal.
+
+Return ONLY a valid JSON object matching this exact schema:
 {
-  "dailyCalories": number,
+  "dailyCalories": ${targetCalories},
   "macros": {"proteinG": number, "carbsG": number, "fatG": number},
   "meals": {
     "breakfast": {"name": string, "items": string[], "calories": number, "proteinGrams": number, "carbsGrams": number, "fatGrams": number},
@@ -373,66 +430,135 @@ Return a JSON object:
     });
 
     const plan = JSON.parse(response.text || "{}");
+    if (!plan || !plan.meals) {
+      return res.json(generateCustomMealPlan());
+    }
     res.json(plan);
   } catch (err) {
-    console.error("Gemini Diet Plan Error:", err);
-    res.status(500).json({ error: "Failed to generate diet plan" });
+    console.error("Gemini Diet Plan Error, using dynamic fallback:", err);
+    res.json(generateCustomMealPlan());
   }
 });
 
 // AI Workout Planner API
 app.post("/api/workout", async (req, res) => {
-  const { goal, fitnessLevel } = req.body;
+  const { goal, fitnessLevel, equipment, duration } = req.body;
   const targetGoal = goal || currentUser.goal;
+  const level = fitnessLevel || 'intermediate';
+  const equip = equipment || 'gym';
+  const mins = Number(duration) || 45;
 
-  if (!ai) {
-    return res.json({
+  const generateCustomWorkoutPlan = () => {
+    let day1Focus = "Upper Body Hypertrophy";
+    let day2Focus = "Back & Lower Body Core";
+    let day3Focus = "Legs & Full Body Power";
+
+    let exDay1 = [
+      { name: "Incline Dumbbell Chest Press", sets: 3, reps: "10-12", targetMuscle: "Upper Chest", instructions: "Lower dumbbells for 2-3 seconds with full stretch." },
+      { name: "Seated Overhead Dumbbell Press", sets: 3, reps: "12", targetMuscle: "Deltoids", instructions: "Keep core tight and press overhead without leaning." },
+      { name: "Tricep Cable Pushdowns / Dips", sets: 3, reps: "15", targetMuscle: "Triceps", instructions: "Squeeze elbows inward at peak contraction." }
+    ];
+
+    let exDay2 = [
+      { name: "Lat Pulldowns / Pull-ups", sets: 4, reps: "8-10", targetMuscle: "Lats & Upper Back", instructions: "Drive down through your elbows cleanly." },
+      { name: "Seated Cable Rows", sets: 3, reps: "12", targetMuscle: "Rhomboids", instructions: "Pause for 1 second at chest contraction." },
+      { name: "Dumbbell Incline Bicep Curls", sets: 3, reps: "12", targetMuscle: "Biceps", instructions: "Strict form, avoid using momentum." }
+    ];
+
+    let exDay3 = [
+      { name: "Barbell Squats / Goblet Squats", sets: 4, reps: "10", targetMuscle: "Quadriceps", instructions: "Break parallel cleanly with chest upright." },
+      { name: "Romanian Deadlifts", sets: 3, reps: "10", targetMuscle: "Hamstrings & Glutes", instructions: "Hinge at hips, maintain flat spine." },
+      { name: "Hanging Leg Raises / Planks", sets: 3, reps: "15", targetMuscle: "Core & Abs", instructions: "Control the movement without swinging." }
+    ];
+
+    if (equip === 'bodyweight') {
+      day1Focus = "Push & Core Bodyweight Circuit";
+      day2Focus = "Pull & Posture Bodyweight Conditioning";
+      day3Focus = "Lower Body Explosion & Abs";
+
+      exDay1 = [
+        { name: "Decline / Flat Push-Ups", sets: 4, reps: "12-15", targetMuscle: "Chest & Triceps", instructions: "Keep body rigid, lower chest to 1 inch off floor." },
+        { name: "Pike Push-Ups for Shoulders", sets: 3, reps: "10-12", targetMuscle: "Anterior Deltoids", instructions: "Hinge at hips, lower crown of head toward floor." },
+        { name: "Diamond Push-Ups / Bench Dips", sets: 3, reps: "12", targetMuscle: "Triceps", instructions: "Maintain tight elbows throughout." }
+      ];
+
+      exDay2 = [
+        { name: "Inverted Rows / Door pull-ups", sets: 4, reps: "10-12", targetMuscle: "Lats & Mid-Back", instructions: "Pull chest directly to bar or sheet anchor." },
+        { name: "Superman Hold Holds", sets: 3, reps: "45 sec", targetMuscle: "Lower Back & Glutes", instructions: "Squeeze shoulder blades and glutes." },
+        { name: "Bodyweight Chins / Door Curls", sets: 3, reps: "10", targetMuscle: "Biceps", instructions: "Control the descent slowly." }
+      ];
+
+      exDay3 = [
+        { name: "Jump Squats / Bulgarian Split Squats", sets: 4, reps: "15", targetMuscle: "Quadriceps & Power", instructions: "Land softly on mid-foot with knee tracking over toes." },
+        { name: "Single-Leg Glute Bridges", sets: 3, reps: "12 each", targetMuscle: "Glutes & Hamstrings", instructions: "Drive hips up through the heel." },
+        { name: "Plank to Shoulder Taps", sets: 3, reps: "20 reps", targetMuscle: "Abdominals", instructions: "Keep hips completely level during taps." }
+      ];
+    } else if (equip === 'home_dumbbells') {
+      day1Focus = "Dumbbell Upper Push & Chest";
+      day2Focus = "Dumbbell Back & Arm Hypertrophy";
+      day3Focus = "Dumbbell Leg Power & Core";
+
+      exDay1 = [
+        { name: "Dumbbell Floor Press", sets: 4, reps: "10-12", targetMuscle: "Chest & Triceps", instructions: "Pause elbows gently on floor before pressing up." },
+        { name: "Arnold Dumbbell Press", sets: 3, reps: "12", targetMuscle: "Deltoids", instructions: "Rotate palms from inwards to forward as you press." },
+        { name: "Overhead Dumbbell Tricep Extension", sets: 3, reps: "12", targetMuscle: "Triceps Long Head", instructions: "Keep elbows pointed forward." }
+      ];
+
+      exDay2 = [
+        { name: "Bent-Over Single-Arm Dumbbell Rows", sets: 4, reps: "10-12", targetMuscle: "Lats & Rhomboids", instructions: "Pull dumbbell toward hip pocket." },
+        { name: "Dumbbell Pullovers", sets: 3, reps: "12", targetMuscle: "Lats & Upper Chest", instructions: "Keep arms slightly bent, stretch overhead." },
+        { name: "Hammer Curls", sets: 3, reps: "12", targetMuscle: "Biceps & Forearms", instructions: "Maintain palms facing each other throughout." }
+      ];
+
+      exDay3 = [
+        { name: "Dumbbell Goblet Squats", sets: 4, reps: "12", targetMuscle: "Quadriceps", instructions: "Hold dumbbell vertically against upper chest." },
+        { name: "Dumbbell Stiff-Legged Deadlifts", sets: 3, reps: "12", targetMuscle: "Hamstrings", instructions: "Feel deep stretch in hamstrings with soft knees." },
+        { name: "Dumbbell Renegade Rows / Russian Twists", sets: 3, reps: "12 each", targetMuscle: "Obliques & Core", instructions: "Resist rotating hips during rows." }
+      ];
+    }
+
+    return {
       fitnessGoal: targetGoal,
       weeklySchedule: [
-        {
-          day: "Monday - Push Day (Chest, Shoulders, Triceps)",
-          focus: "Upper Body Hypertrophy",
-          exercises: [
-            { name: "Incline Dumbbell Press", sets: 3, reps: "10-12", targetMuscle: "Upper Chest", instructions: "Control the eccentric phase for 2 seconds." },
-            { name: "Seated Overhead Dumbbell Press", sets: 3, reps: "12", targetMuscle: "Deltoids", instructions: "Keep core tight, do not arch lower back." },
-            { name: "Tricep Rope Pushdowns", sets: 3, reps: "15", targetMuscle: "Triceps", instructions: "Squeeze at peak contraction." }
-          ]
-        },
-        {
-          day: "Wednesday - Pull Day (Back, Biceps)",
-          focus: "Back & Core Strength",
-          exercises: [
-            { name: "Lat Pulldowns / Pull-ups", sets: 4, reps: "8-10", targetMuscle: "Lats", instructions: "Drive down with elbows." },
-            { name: "Seated Cable Rows", sets: 3, reps: "12", targetMuscle: "Rhomboids / Mid-Back", instructions: "Retract shoulder blades." },
-            { name: "Hammer Curls", sets: 3, reps: "12", targetMuscle: "Biceps & Brachialis", instructions: "Keep elbows glued to sides." }
-          ]
-        },
-        {
-          day: "Friday - Legs & Abs",
-          focus: "Lower Body Power",
-          exercises: [
-            { name: "Goblet Squats or Barbell Back Squat", sets: 4, reps: "10", targetMuscle: "Quadriceps & Glutes", instructions: "Break parallel cleanly." },
-            { name: "Romanian Deadlifts", sets: 3, reps: "10", targetMuscle: "Hamstrings", instructions: "Hinge strictly at hips." },
-            { name: "Hanging Leg Raises", sets: 3, reps: "15", targetMuscle: "Abdominals", instructions: "Avoid swinging momentum." }
-          ]
-        }
+        { day: "Monday - Session 1", focus: day1Focus, exercises: exDay1 },
+        { day: "Wednesday - Session 2", focus: day2Focus, exercises: exDay2 },
+        { day: "Friday - Session 3", focus: day3Focus, exercises: exDay3 }
       ],
       tips: [
-        "Warm up for 5-8 minutes with dynamic stretches prior to resistance work.",
-        "Stay hydrated and aim for 7-8 hours of sleep for optimal muscular recovery."
+        `Perform a 5-minute dynamic warm-up prior to your ${mins}-minute ${level} session.`,
+        `Progressive overload: increase weight or repetitions weekly once form is mastered.`,
+        `Equipment target: ${equip.replace('_', ' ')}. Maintain proper form over heavy momentum.`
       ]
-    });
+    };
+  };
+
+  if (!ai) {
+    return res.json(generateCustomWorkoutPlan());
   }
 
   try {
-    const prompt = `Create a structured 3-day weekly workout plan for a person with goal "${targetGoal}".
-Return JSON object:
+    const prompt = `Create a customized 3-day weekly workout plan for goal: "${targetGoal}".
+Level: "${level}".
+Equipment: "${equip}" (Ensure all exercises strictly use this equipment context!).
+Session length: ${mins} minutes.
+
+Return ONLY a valid JSON object matching this schema:
 {
   "fitnessGoal": "${targetGoal}",
   "weeklySchedule": [
     {
-      "day": string,
-      "focus": string,
+      "day": "Monday - Day 1",
+      "focus": "string",
+      "exercises": [{"name": string, "sets": number, "reps": string, "targetMuscle": string, "instructions": string}]
+    },
+    {
+      "day": "Wednesday - Day 2",
+      "focus": "string",
+      "exercises": [{"name": string, "sets": number, "reps": string, "targetMuscle": string, "instructions": string}]
+    },
+    {
+      "day": "Friday - Day 3",
+      "focus": "string",
       "exercises": [{"name": string, "sets": number, "reps": string, "targetMuscle": string, "instructions": string}]
     }
   ],
@@ -446,10 +572,13 @@ Return JSON object:
     });
 
     const workout = JSON.parse(response.text || "{}");
+    if (!workout || !workout.weeklySchedule) {
+      return res.json(generateCustomWorkoutPlan());
+    }
     res.json(workout);
   } catch (e) {
-    console.error("Gemini Workout error:", e);
-    res.status(500).json({ error: "Failed to generate workout plan" });
+    console.error("Gemini Workout error, using dynamic fallback:", e);
+    res.json(generateCustomWorkoutPlan());
   }
 });
 

@@ -65,12 +65,14 @@ export default function App() {
   const handleLoginSuccess = (loggedInUser: UserProfile) => {
     setUser(loggedInUser);
     setIsAuthenticated(true);
+    setCurrentView('dashboard');
     localStorage.setItem('health_guardian_auth_user', JSON.stringify(loggedInUser));
   };
 
   const handleLogout = () => {
     localStorage.removeItem('health_guardian_auth_user');
     setIsAuthenticated(false);
+    setCurrentView('dashboard');
   };
 
   // Health Metrics State
