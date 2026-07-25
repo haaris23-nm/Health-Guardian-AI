@@ -2,14 +2,42 @@ import React, { useState, useEffect } from 'react';
 import { Building2, Search, Phone, MapPin, Navigation, Clock, Star, ExternalLink, Compass, LocateFixed, ShieldAlert } from 'lucide-react';
 import { Hospital } from '../types';
 
+const DEFAULT_INDIAN_HOSPITALS: Hospital[] = [
+  { id: "h_1", name: "AIIMS (All India Institute of Medical Sciences)", address: "Ansari Nagar East, Ring Road, New Delhi - 110029", distanceKm: 1.2, rating: 4.9, phone: "+91 11 2658 8500", lat: 28.5672, lng: 77.2100, open24h: true, emergencyServices: true },
+  { id: "h_2", name: "Apollo Hospitals Greams Road", address: "Greams Lane, Off Greams Rd, Thousand Lights, Chennai, Tamil Nadu - 600006", distanceKm: 2.5, rating: 4.8, phone: "+91 44 2829 0200", lat: 13.0604, lng: 80.2496, open24h: true, emergencyServices: true },
+  { id: "h_3", name: "Fortis Memorial Research Institute (FMRI)", address: "Sector 44, Opp HUDA City Centre, Gurugram, Delhi NCR - 122002", distanceKm: 3.8, rating: 4.7, phone: "+91 124 4921 021", lat: 28.4595, lng: 77.0725, open24h: true, emergencyServices: true },
+  { id: "h_4", name: "Manipal Hospital HAL Airport Road", address: "98 HAL Old Airport Rd, Kodihalli, Bengaluru, Karnataka - 560017", distanceKm: 4.2, rating: 4.8, phone: "+91 1800 102 5555", lat: 12.9583, lng: 77.6492, open24h: true, emergencyServices: true },
+  { id: "h_5", name: "Max Super Speciality Hospital Saket", address: "1, 2 Press Enclave Marg, Saket, New Delhi - 110017", distanceKm: 5.1, rating: 4.7, phone: "+91 11 2651 5050", lat: 28.5280, lng: 77.2118, open24h: true, emergencyServices: true },
+  { id: "h_6", name: "Lilavati Hospital & Research Centre", address: "A-791, Bandra Reclamation, Bandra West, Mumbai, Maharashtra - 400050", distanceKm: 6.4, rating: 4.6, phone: "+91 22 2675 1000", lat: 19.0518, lng: 72.8288, open24h: true, emergencyServices: true },
+  { id: "h_7", name: "Medanta - The Medicity", address: "CH Baktawar Singh Rd, Sector 38, Gurugram, Haryana - 122001", distanceKm: 7.0, rating: 4.9, phone: "+91 124 4141 414", lat: 28.4385, lng: 77.0428, open24h: true, emergencyServices: true },
+  { id: "h_8", name: "Tata Memorial Hospital", address: "Dr. E Borges Road, Parel, Mumbai, Maharashtra - 400012", distanceKm: 8.2, rating: 4.9, phone: "+91 22 2417 7000", lat: 19.0028, lng: 72.8427, open24h: true, emergencyServices: true },
+  { id: "h_9", name: "KIMS Hospitals Secunderabad", address: "1-8-31/1, Minister Rd, Secunderabad, Telangana - 500003", distanceKm: 5.8, rating: 4.7, phone: "+91 40 4488 5000", lat: 17.4339, lng: 78.4862, open24h: true, emergencyServices: true },
+  { id: "h_10", name: "AMRI Hospital Dhakuria", address: "Block A, Dhakuria, Kolkata, West Bengal - 700031", distanceKm: 6.1, rating: 4.6, phone: "+91 33 6680 0000", lat: 22.5113, lng: 88.3689, open24h: true, emergencyServices: true }
+];
+
 export const HospitalsMapView: React.FC = () => {
-  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [hospitals, setHospitals] = useState<Hospital[]>(DEFAULT_INDIAN_HOSPITALS);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filter24h, setFilter24h] = useState<boolean>(false);
-  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
+  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(DEFAULT_INDIAN_HOSPITALS[0]);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locating, setLocating] = useState<boolean>(false);
-  const [mapMode, setMapMode] = useState<'osm' | 'interactive'>('osm');
+
+  const getFilteredLocalHospitals = (qText: string, only24h: boolean) => {
+    let list = DEFAULT_INDIAN_HOSPITALS;
+    if (only24h) {
+      list = list.filter(h => h.open24h);
+    }
+    if (qText.trim()) {
+      const term = qText.toLowerCase();
+      const filtered = list.filter(h => 
+        h.name.toLowerCase().includes(term) || 
+        h.address.toLowerCase().includes(term)
+      );
+      if (filtered.length > 0) return filtered;
+    }
+    return list;
+  };
 
   useEffect(() => {
     fetchHospitals();
@@ -27,13 +55,21 @@ export const HospitalsMapView: React.FC = () => {
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
-        setHospitals(data);
-        if (data.length > 0) {
+        if (Array.isArray(data) && data.length > 0) {
+          setHospitals(data);
           setSelectedHospital(data[0]);
+          return;
         }
       }
     } catch (e) {
-      console.error('Failed to fetch hospitals:', e);
+      console.warn('Backend API unavailable, using client-side hospital dataset:', e);
+    }
+
+    // Static / Vercel fallback logic
+    const fallbackList = getFilteredLocalHospitals(searchQuery, filter24h);
+    setHospitals(fallbackList);
+    if (fallbackList.length > 0) {
+      setSelectedHospital(fallbackList[0]);
     }
   };
 
@@ -92,13 +128,20 @@ export const HospitalsMapView: React.FC = () => {
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
-        setHospitals(data);
-        if (data.length > 0) {
+        if (Array.isArray(data) && data.length > 0) {
+          setHospitals(data);
           setSelectedHospital(data[0]);
+          return;
         }
       }
     } catch (e) {
-      console.error('Failed to fetch hospitals:', e);
+      console.warn('API query failed, using fallback:', e);
+    }
+
+    const fallbackList = getFilteredLocalHospitals(queryText, filter24h);
+    setHospitals(fallbackList);
+    if (fallbackList.length > 0) {
+      setSelectedHospital(fallbackList[0]);
     }
   };
 
@@ -248,7 +291,7 @@ export const HospitalsMapView: React.FC = () => {
               width="100%"
               height="100%"
               className="absolute inset-0 border-0 opacity-95 transition-all"
-              src={`https://maps.google.com/maps?q=${currentLat},${currentLng}&z=16&output=embed`}
+              src={`https://maps.google.com/maps?q=${encodeURIComponent((selectedHospital ? `${selectedHospital.name}, ${selectedHospital.address}` : 'AIIMS Delhi'))}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
               loading="lazy"
             />
           ) : (
