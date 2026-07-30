@@ -39,7 +39,7 @@ let currentMetrics = {
   weightKg: 64,
   bmi: 22.7,
   bmiCategory: "Normal weight",
-  waterIntakeMl: 1750,
+  waterIntakeMl: 0,
   waterGoalMl: 2500,
   sleepHours: 7.5,
   sleepGoalHours: 8,

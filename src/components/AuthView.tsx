@@ -19,6 +19,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail
   // Register form state
   const [regName, setRegName] = useState<string>('');
   const [regEmail, setRegEmail] = useState<string>('');
+  const [regAge, setRegAge] = useState<string>('');
+  const [regGender, setRegGender] = useState<'male' | 'female' | 'other' | ''>('');
   const [regPassword, setRegPassword] = useState<string>('');
   const [regConfirmPassword, setRegConfirmPassword] = useState<string>('');
   const [agreeTerms, setAgreeTerms] = useState<boolean>(true);
@@ -108,6 +110,16 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail
       return;
     }
 
+    if (!regAge || isNaN(Number(regAge)) || Number(regAge) <= 0) {
+      setErrorMessage('Please manually enter your age.');
+      return;
+    }
+
+    if (!regGender) {
+      setErrorMessage('Please manually select your gender.');
+      return;
+    }
+
     if (regPassword.length < 6) {
       setErrorMessage('Password must be at least 6 characters long.');
       return;
@@ -129,8 +141,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail
         id: `usr_${Date.now()}`,
         name: regName.trim(),
         email: regEmail.trim(),
-        age: 25,
-        gender: 'other',
+        age: Number(regAge),
+        gender: regGender as 'male' | 'female' | 'other',
         heightCm: 170,
         weightKg: 68,
         goal: 'maintain',
@@ -351,6 +363,42 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail
                   placeholder="name@example.com"
                   className="w-full pl-10 pr-4 py-3 rounded-2xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-hidden transition-all"
                 />
+              </div>
+            </div>
+
+            {/* Age & Gender Fields (Manually Entered) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                  Age (Years) *
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="120"
+                  required
+                  value={regAge}
+                  onChange={(e) => setRegAge(e.target.value)}
+                  placeholder="e.g. 28"
+                  className="w-full px-3.5 py-3 rounded-2xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-hidden transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                  Gender *
+                </label>
+                <select
+                  required
+                  value={regGender}
+                  onChange={(e) => setRegGender(e.target.value as any)}
+                  className="w-full px-3.5 py-3 rounded-2xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-hidden transition-all"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
             </div>
 

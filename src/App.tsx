@@ -89,7 +89,7 @@ export default function App() {
       bmiCategory: 'Normal weight',
       weightKg: 72,
       heightCm: 175,
-      waterIntakeMl: 1750,
+      waterIntakeMl: 0,
       waterGoalMl: 2500,
       sleepHours: 7.5,
       sleepGoalHours: 8.0,

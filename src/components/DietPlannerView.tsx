@@ -7,6 +7,10 @@ interface DietPlannerViewProps {
 }
 
 export const DietPlannerView: React.FC<DietPlannerViewProps> = ({ user }) => {
+  const [age, setAge] = useState<number>(user.age || 25);
+  const [gender, setGender] = useState<'male' | 'female' | 'other'>(user.gender || 'male');
+  const [heightCm, setHeightCm] = useState<number>(user.heightCm || 170);
+  const [weightKg, setWeightKg] = useState<number>(user.weightKg || 70);
   const [goal, setGoal] = useState<UserProfile['goal']>(user.goal || 'maintain');
   const [dietaryPreference, setDietaryPreference] = useState<string>('veg');
   const [cuisine, setCuisine] = useState<string>('indian');
@@ -21,10 +25,10 @@ export const DietPlannerView: React.FC<DietPlannerViewProps> = ({ user }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          age: user.age,
-          gender: user.gender,
-          heightCm: user.heightCm,
-          weightKg: user.weightKg,
+          age: Number(age),
+          gender,
+          heightCm: Number(heightCm),
+          weightKg: Number(weightKg),
           goal,
           dietaryPreference,
           cuisine,
@@ -81,21 +85,50 @@ export const DietPlannerView: React.FC<DietPlannerViewProps> = ({ user }) => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-          <div className="p-3 rounded-2xl bg-surface-variant-light/80 dark:bg-surface-variant-dark/80 border border-outline-light/30">
-            <span className="text-on-surface-variant-light block text-[10px] font-bold uppercase">Age</span>
-            <span className="font-black text-base text-on-surface-light dark:text-on-surface-dark">{user.age} Years</span>
+          <div className="p-2.5 rounded-2xl bg-surface-variant-light/80 dark:bg-surface-variant-dark/80 border border-outline-light/30">
+            <label className="text-on-surface-variant-light block text-[10px] font-bold uppercase mb-1">Age (Years)</label>
+            <input
+              type="number"
+              min="1"
+              max="120"
+              value={age}
+              onChange={(e) => setAge(Number(e.target.value))}
+              className="w-full bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-xl font-bold text-sm text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700"
+            />
           </div>
-          <div className="p-3 rounded-2xl bg-surface-variant-light/80 dark:bg-surface-variant-dark/80 border border-outline-light/30">
-            <span className="text-on-surface-variant-light block text-[10px] font-bold uppercase">Gender</span>
-            <span className="font-black text-base text-on-surface-light dark:text-on-surface-dark capitalize">{user.gender}</span>
+          <div className="p-2.5 rounded-2xl bg-surface-variant-light/80 dark:bg-surface-variant-dark/80 border border-outline-light/30">
+            <label className="text-on-surface-variant-light block text-[10px] font-bold uppercase mb-1">Gender</label>
+            <select
+              value={gender}
+              onChange={(e) => setGender(e.target.value as any)}
+              className="w-full bg-white dark:bg-slate-900 px-2 py-1.5 rounded-xl font-bold text-sm text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 capitalize"
+            >
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
           </div>
-          <div className="p-3 rounded-2xl bg-surface-variant-light/80 dark:bg-surface-variant-dark/80 border border-outline-light/30">
-            <span className="text-on-surface-variant-light block text-[10px] font-bold uppercase">Height</span>
-            <span className="font-black text-base text-on-surface-light dark:text-on-surface-dark">{user.heightCm} cm</span>
+          <div className="p-2.5 rounded-2xl bg-surface-variant-light/80 dark:bg-surface-variant-dark/80 border border-outline-light/30">
+            <label className="text-on-surface-variant-light block text-[10px] font-bold uppercase mb-1">Height (cm)</label>
+            <input
+              type="number"
+              min="50"
+              max="250"
+              value={heightCm}
+              onChange={(e) => setHeightCm(Number(e.target.value))}
+              className="w-full bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-xl font-bold text-sm text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700"
+            />
           </div>
-          <div className="p-3 rounded-2xl bg-surface-variant-light/80 dark:bg-surface-variant-dark/80 border border-outline-light/30">
-            <span className="text-on-surface-variant-light block text-[10px] font-bold uppercase">Weight</span>
-            <span className="font-black text-base text-on-surface-light dark:text-on-surface-dark">{user.weightKg} kg</span>
+          <div className="p-2.5 rounded-2xl bg-surface-variant-light/80 dark:bg-surface-variant-dark/80 border border-outline-light/30">
+            <label className="text-on-surface-variant-light block text-[10px] font-bold uppercase mb-1">Weight (kg)</label>
+            <input
+              type="number"
+              min="20"
+              max="300"
+              value={weightKg}
+              onChange={(e) => setWeightKg(Number(e.target.value))}
+              className="w-full bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-xl font-bold text-sm text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700"
+            />
           </div>
         </div>
 
