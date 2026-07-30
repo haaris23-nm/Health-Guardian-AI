@@ -41,8 +41,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail
       return;
     }
 
-    if (loginPassword.length < 4) {
-      setErrorMessage('Password must be at least 4 characters.');
+    if (loginPassword.length < 6) {
+      setErrorMessage('Password must be at least 6 digits / characters long.');
       return;
     }
 
@@ -260,9 +260,10 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
+                  minLength={6}
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="At least 6 digits (e.g. 123456)"
                   className="w-full pl-10 pr-10 py-3 rounded-2xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-hidden transition-all"
                 />
                 <button
@@ -273,6 +274,9 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess, defaultEmail
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-medium">
+                Password must be at least 6 digits / characters long.
+              </p>
             </div>
 
             {/* Remember Me Checkbox */}

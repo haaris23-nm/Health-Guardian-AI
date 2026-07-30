@@ -91,6 +91,9 @@ app.post("/api/register", (req, res) => {
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
   }
+  if (String(password).length < 6) {
+    return res.status(400).json({ error: "Password must be at least 6 digits/characters long" });
+  }
   currentUser = {
     ...currentUser,
     name: name || currentUser.name,
@@ -107,6 +110,9 @@ app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
+  }
+  if (String(password).length < 6) {
+    return res.status(400).json({ error: "Password must be at least 6 digits/characters long" });
   }
   currentUser.email = email;
   return res.json({ token: currentUser.token, user: currentUser });
@@ -240,7 +246,7 @@ app.post("/api/mood", async (req, res) => {
   if (ai) {
     try {
       const response = await ai.models.generateContent({
-        model: "gemini-3.6-flash",
+        model: "gemini-2.5-flash",
         contents: `The user feels "${moodLabel}" (level ${moodLevel}/5) with notes: "${notes}". Provide a short, uplifting 2-sentence wellness advice for mindfulness and emotional health.`,
       });
       if (response.text) {
@@ -297,7 +303,7 @@ Return a JSON object matching this schema:
 }`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         systemInstruction: "You are an expert AI triage health assistant. Provide objective medical information while emphasizing that you are an AI and not a doctor.",
@@ -422,7 +428,7 @@ Return ONLY a valid JSON object matching this exact schema:
 }`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -566,7 +572,7 @@ Return ONLY a valid JSON object matching this schema:
 }`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: { responseMimeType: "application/json" }
     });
@@ -597,7 +603,7 @@ app.post("/api/chatbot", async (req, res) => {
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
+      model: "gemini-2.5-flash",
       contents: message,
       config: {
         systemInstruction: "You are HealthMate AI, a friendly, encouraging health and fitness expert chatbot. Provide clear, empathetic, and scientifically backed health advice. Always include a brief note reminding users to consult medical professionals for actual medical conditions."
@@ -743,7 +749,7 @@ Extract and organize all details. Return a JSON object with this EXACT schema:
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
+      model: "gemini-2.5-flash",
       contents: contentsArray,
       config: {
         responseMimeType: "application/json",
@@ -821,7 +827,7 @@ Return JSON array with exact format:
   }
 ]`;
         const response = await ai.models.generateContent({
-          model: "gemini-3.6-flash",
+          model: "gemini-2.5-flash",
           contents: prompt,
           config: { responseMimeType: "application/json" }
         });

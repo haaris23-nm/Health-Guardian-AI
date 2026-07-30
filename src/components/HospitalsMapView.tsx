@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Search, Phone, MapPin, Navigation, Clock, Star, ExternalLink, Compass, LocateFixed, ShieldAlert } from 'lucide-react';
+import { Building2, Search, Phone, MapPin, Navigation, Clock, Star, ExternalLink, Compass, LocateFixed, ShieldAlert, History, Copy, Trash2, Check, X, Sparkles } from 'lucide-react';
 import { Hospital } from '../types';
 
 const DEFAULT_INDIAN_HOSPITALS: Hospital[] = [
@@ -15,6 +15,15 @@ const DEFAULT_INDIAN_HOSPITALS: Hospital[] = [
   { id: "h_10", name: "AMRI Hospital Dhakuria", address: "Block A, Dhakuria, Kolkata, West Bengal - 700031", distanceKm: 6.1, rating: 4.6, phone: "+91 33 6680 0000", lat: 22.5113, lng: 88.3689, open24h: true, emergencyServices: true }
 ];
 
+export interface LocationLogEntry {
+  id: string;
+  time: string;
+  lat: number;
+  lng: number;
+  locationName: string;
+  source: 'GPS Device' | 'Hospital GPS Radius' | 'Search Location';
+}
+
 export const HospitalsMapView: React.FC = () => {
   const [hospitals, setHospitals] = useState<Hospital[]>(DEFAULT_INDIAN_HOSPITALS);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -22,6 +31,35 @@ export const HospitalsMapView: React.FC = () => {
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(DEFAULT_INDIAN_HOSPITALS[0]);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locating, setLocating] = useState<boolean>(false);
+
+  // Nearby Location Logs state
+  const [locationLogs, setLocationLogs] = useState<LocationLogEntry[]>([
+    {
+      id: 'log_init',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      lat: DEFAULT_INDIAN_HOSPITALS[0].lat,
+      lng: DEFAULT_INDIAN_HOSPITALS[0].lng,
+      locationName: DEFAULT_INDIAN_HOSPITALS[0].name,
+      source: 'Hospital GPS Radius',
+    },
+  ]);
+  const [isLogModalOpen, setIsLogModalOpen] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [copiedLogId, setCopiedLogId] = useState<string | null>(null);
+
+  const addLocationLog = (lat: number, lng: number, locationName: string, source: LocationLogEntry['source']) => {
+    const newLog: LocationLogEntry = {
+      id: `log_${Date.now()}_${Math.random().toString(36).substring(2, 5)}`,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      lat: Number(lat.toFixed(5)),
+      lng: Number(lng.toFixed(5)),
+      locationName,
+      source,
+    };
+    setLocationLogs(prev => [newLog, ...prev]);
+    setToastMessage(`📍 Nearby Location Logged: ${locationName} (${newLog.lat}, ${newLog.lng})`);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
 
   const getFilteredLocalHospitals = (qText: string, only24h: boolean) => {
     let list = DEFAULT_INDIAN_HOSPITALS;
@@ -97,24 +135,34 @@ export const HospitalsMapView: React.FC = () => {
   };
 
   const handleDetectLocation = () => {
+    setLocating(true);
+    const activeHospital = selectedHospital || hospitals[0] || DEFAULT_INDIAN_HOSPITALS[0];
+
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser.');
+      const coords = { lat: activeHospital.lat, lng: activeHospital.lng };
+      setUserLocation(coords);
+      addLocationLog(coords.lat, coords.lng, activeHospital.name, 'Hospital GPS Radius');
+      setLocating(false);
       return;
     }
-    setLocating(true);
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         setUserLocation(coords);
         setLocating(false);
         fetchHospitals(coords.lat, coords.lng);
+        addLocationLog(coords.lat, coords.lng, 'Hardware GPS Device', 'GPS Device');
       },
       (err) => {
-        console.warn('Geolocation error:', err);
+        console.warn('Geolocation restriction or timeout:', err);
+        // Seamless fallback to selected hospital center position
+        const coords = { lat: activeHospital.lat, lng: activeHospital.lng };
+        setUserLocation(coords);
         setLocating(false);
-        alert('Could not access device location. Showing default medical centers.');
+        addLocationLog(coords.lat, coords.lng, `${activeHospital.name.split(' ')[0]} Center`, 'Hospital GPS Radius');
       },
-      { timeout: 10000, enableHighAccuracy: true }
+      { timeout: 5000, enableHighAccuracy: true }
     );
   };
 
@@ -426,28 +474,54 @@ export const HospitalsMapView: React.FC = () => {
           </div>
 
           {/* Floating Nearby Location Log Badge (Down Right Corner) */}
-          <div className="absolute bottom-20 right-3 z-20 px-3 py-1.5 bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-700/80 text-white shadow-lg flex items-center gap-2 text-xs">
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-            <div className="flex flex-col">
-              <span className="text-[9px] uppercase font-black text-slate-400 tracking-wider">Nearby Location Log</span>
-              <span className="font-bold text-slate-100 text-[11px]">
-                {userLocation 
-                  ? `${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}` 
-                  : selectedHospital 
-                    ? `${selectedHospital.name.split(' ')[0]} Radius` 
-                    : 'GPS Active'}
-              </span>
-            </div>
+          <div className="absolute bottom-20 right-3 z-20 px-3 py-2 bg-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-700/80 text-white shadow-xl flex items-center gap-2.5 text-xs">
             <button
               type="button"
-              onClick={handleDetectLocation}
-              disabled={locating}
-              className="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white cursor-pointer transition-all ml-1 flex items-center gap-1 font-bold text-[10px]"
-              title="Detect or Update Nearby Location"
+              onClick={() => setIsLogModalOpen(true)}
+              className="flex items-center gap-2 text-left cursor-pointer hover:opacity-90 transition-opacity"
+              title="Click to view full Nearby Location Logs History"
             >
-              <LocateFixed className={`w-3.5 h-3.5 ${locating ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Log</span>
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[9px] uppercase font-black text-slate-400 tracking-wider">Nearby Location Log</span>
+                  <span className="px-1.5 py-0.2 rounded-full bg-slate-800 text-emerald-400 text-[9px] font-extrabold border border-slate-700">
+                    {locationLogs.length} Saved
+                  </span>
+                </div>
+                <span className="font-bold text-slate-100 text-[11px] truncate max-w-[160px]">
+                  {locationLogs.length > 0
+                    ? `${locationLogs[0].locationName.split(' ')[0]} (${locationLogs[0].lat}, ${locationLogs[0].lng})`
+                    : userLocation 
+                      ? `${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}` 
+                      : selectedHospital 
+                        ? `${selectedHospital.name.split(' ')[0]} Radius` 
+                        : 'GPS Active'}
+                </span>
+              </div>
             </button>
+
+            <div className="flex items-center gap-1 shrink-0 ml-1">
+              <button
+                type="button"
+                onClick={handleDetectLocation}
+                disabled={locating}
+                className="p-1.5 px-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white cursor-pointer transition-all flex items-center gap-1 font-bold text-[10px] shadow-xs disabled:opacity-50"
+                title="Log or Update Current Location Coordinates"
+              >
+                <LocateFixed className={`w-3.5 h-3.5 ${locating ? 'animate-spin' : ''}`} />
+                <span>Log</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsLogModalOpen(true)}
+                className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white cursor-pointer transition-all border border-slate-700"
+                title="View Location Logs History"
+              >
+                <History className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
           {/* Bottom Selected Details Preview & Navigation Actions */}
@@ -564,6 +638,169 @@ export const HospitalsMapView: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Toast Notification Banner */}
+      {toastMessage && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-3 bg-slate-900/95 text-white text-xs font-bold rounded-2xl border border-slate-700 shadow-2xl flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-3 backdrop-blur-md">
+          <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Location Logs History Modal Inspector */}
+      {isLogModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700/80 rounded-3xl w-full max-w-2xl text-white shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
+                  <History className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-white">Nearby Location Logs History</h3>
+                  <p className="text-xs text-slate-400">Real-time recorded GPS & Spatial Coordinates Log</p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsLogModalOpen(false)}
+                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Action Toolbar */}
+            <div className="p-4 bg-slate-900/50 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-2 text-slate-300 font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Total Recorded Logs: <strong>{locationLogs.length}</strong></span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleDetectLocation}
+                  disabled={locating}
+                  className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  <LocateFixed className={`w-3.5 h-3.5 ${locating ? 'animate-spin' : ''}`} />
+                  <span>Log Current Location</span>
+                </button>
+
+                {locationLogs.length > 0 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const allText = locationLogs.map(l => `[${l.time}] ${l.locationName}: Lat ${l.lat}, Lng ${l.lng} (${l.source})`).join('\n');
+                        navigator.clipboard.writeText(allText);
+                        setToastMessage("Copied all location logs to clipboard!");
+                        setTimeout(() => setToastMessage(null), 3000);
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold transition-all flex items-center gap-1.5 border border-slate-700 cursor-pointer"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy All</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLocationLogs([]);
+                        setToastMessage("Cleared location log history.");
+                        setTimeout(() => setToastMessage(null), 3000);
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 font-bold transition-all flex items-center gap-1.5 border border-rose-800/50 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Clear</span>
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Location Log List */}
+            <div className="p-5 overflow-y-auto space-y-3 flex-1">
+              {locationLogs.length === 0 ? (
+                <div className="p-8 text-center text-slate-400 text-xs font-semibold bg-slate-800/40 rounded-2xl border border-slate-800">
+                  No location logs saved yet. Click <strong>"Log Current Location"</strong> to record your current GPS coordinates.
+                </div>
+              ) : (
+                locationLogs.map((log) => (
+                  <div
+                    key={log.id}
+                    className="p-3.5 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-between gap-3 transition-all hover:border-blue-500/50"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0 mt-0.5">
+                        <MapPin className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-extrabold text-xs text-white">{log.locationName}</h4>
+                          <span className="px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 text-[10px] font-bold">
+                            {log.source}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-[11px] text-slate-300 font-mono mt-1">
+                          <span>Lat: {log.lat}</span>
+                          <span>Lng: {log.lng}</span>
+                          <span className="text-slate-500 font-sans text-[10px]">• {log.time}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const text = `Lat: ${log.lat}, Lng: ${log.lng}`;
+                          navigator.clipboard.writeText(text);
+                          setCopiedLogId(log.id);
+                          setTimeout(() => setCopiedLogId(null), 2000);
+                        }}
+                        className="px-2.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-bold transition-all flex items-center gap-1 border border-slate-600 cursor-pointer"
+                        title="Copy GPS coordinates"
+                      >
+                        {copiedLogId === log.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span className="text-[10px]">{copiedLogId === log.id ? 'Copied' : 'Copy'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLocationLogs(prev => prev.filter(l => l.id !== log.id));
+                        }}
+                        className="p-1.5 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-slate-700 transition-colors cursor-pointer"
+                        title="Delete this log"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-800 bg-slate-900/90 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsLogModalOpen(false)}
+                className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-all border border-slate-700 cursor-pointer"
+              >
+                Close Inspector
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
