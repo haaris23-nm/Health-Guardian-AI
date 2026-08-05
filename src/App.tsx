@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Navbar } from './components/Navbar';
 import { BottomNav } from './components/BottomNav';
 import { NavigationDrawer } from './components/NavigationDrawer';
@@ -418,6 +419,9 @@ export default function App() {
         onNavigate={(v) => setCurrentView(v)}
         onOpenFAB={() => setQuickLogOpen(true)}
       />
+
+      {/* Vercel Speed Insights */}
+      <SpeedInsights />
 
     </div>
   );
